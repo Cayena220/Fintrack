@@ -1,0 +1,58 @@
+# Supabase CLI settings for the LOCAL stack (`npx supabase start`).
+# The hosted project is configured in the dashboard; see README.md.
+project_id = "fintrack"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[studio]
+enabled = true
+port = 54323
+
+# Emails sent locally (sign-up confirmation, password reset) appear here.
+[local_smtp]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+# The free plan's maximum. FinTrack builds are well under it; raise this
+# (and the dashboard limit, on a paid plan) only if a build outgrows it.
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "io.fintrack.app://login-callback"
+# Where Supabase may send users after email links and OAuth.
+additional_redirect_urls = ["io.fintrack.app://login-callback"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+double_confirm_changes = true
+
+# Google sign-in. Put the Web client's id and secret in supabase/.env:
+#   SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID=...apps.googleusercontent.com
+#   SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET=...
+[auth.external.google]
+# Turn on once the OAuth clients exist (README, "Google OAuth clients").
+enabled = false
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+# The Android google_sign_in flow returns an ID token without a nonce.
+skip_nonce_check = true

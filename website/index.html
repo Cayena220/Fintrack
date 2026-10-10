@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FinTrack — Track every peso, plan every goal</title>
+  <meta name="description" content="FinTrack is a free personal finance app for Android and Windows. Track income and expenses, set budgets, see reports and reach your savings goals." />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    details > summary { list-style: none; cursor: pointer; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .chev { transform: rotate(180deg); }
+  </style>
+</head>
+<body class="bg-white font-sans text-slate-800 antialiased">
+
+  <!-- Nav -->
+  <header class="sticky top-0 z-30 border-b border-slate-100 bg-white/80 backdrop-blur">
+    <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+      <a href="#" class="flex items-center gap-2 text-lg font-bold text-slate-900">
+        <img src="assets/favicon.svg" alt="" class="h-8 w-8" /> FinTrack
+      </a>
+      <div class="hidden items-center gap-8 text-sm font-medium text-slate-600 sm:flex">
+        <a href="#features" class="hover:text-brand-600">Features</a>
+        <a href="#download" class="hover:text-brand-600">Download</a>
+        <a href="#faq" class="hover:text-brand-600">FAQ</a>
+      </div>
+      <a href="#download" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">Get the app</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="relative overflow-hidden bg-gradient-to-b from-brand-50 to-white">
+    <div class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
+      <div>
+        <span class="inline-flex items-center gap-2 rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-700">
+          Free · Android &amp; Windows
+        </span>
+        <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+          Know where your money goes.<br /><span class="text-brand-600">Decide where it grows.</span>
+        </h1>
+        <p class="mt-5 max-w-lg text-lg text-slate-600">
+          FinTrack keeps your income, expenses, budgets and savings goals in one place —
+          synced securely between your phone and your PC.
+        </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a href="#download" data-dl="android" class="dl-link inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3.5 font-semibold text-white shadow-lg hover:bg-slate-800">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.84-3.18a.38.38 0 00-.66-.38l-1.86 3.22a11.5 11.5 0 00-9.84 0L5.22 5.92a.38.38 0 10-.66.38L6.4 9.48A10.8 10.8 0 001 18h22a10.8 10.8 0 00-5.4-8.52zM7 15.25a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5zm10 0a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5z"/></svg>
+            Download for Android
+          </a>
+          <a href="#download" data-dl="windows" class="dl-link inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3.5 font-semibold text-slate-900 hover:border-slate-400">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5l7.5-1v7H3v-6zm0 13l7.5 1v-7H3v6zm8.5 1.2L21 21v-8.5h-9.5v7.2zm0-15.4v7.2H21V3l-9.5 1.3z"/></svg>
+            Download for Windows
+          </a>
+        </div>
+        <p class="mt-4 text-sm text-slate-500" id="hero-version">&nbsp;</p>
+      </div>
+
+      <!-- Phone mockup -->
+      <div class="relative mx-auto w-full max-w-xs">
+        <div class="absolute -inset-8 -z-10 rounded-full bg-brand-200/40 blur-3xl"></div>
+        <div class="rounded-[2.5rem] border-[10px] border-slate-900 bg-slate-50 p-4 shadow-2xl">
+          <div class="flex items-center justify-between text-xs text-slate-500"><span>9:41</span><span>●●●</span></div>
+          <p class="mt-4 text-xs font-medium text-slate-500">Total balance</p>
+          <p class="text-3xl font-extrabold text-slate-900">₱48,250.00</p>
+          <div class="mt-4 grid grid-cols-2 gap-2">
+            <div class="rounded-xl bg-white p-3 shadow-sm"><p class="text-[10px] text-slate-500">Income</p><p class="font-bold text-brand-600">+₱32,000</p></div>
+            <div class="rounded-xl bg-white p-3 shadow-sm"><p class="text-[10px] text-slate-500">Expenses</p><p class="font-bold text-rose-500">−₱18,420</p></div>
+          </div>
+          <div class="mt-4 rounded-xl bg-white p-3 shadow-sm">
+            <div class="flex justify-between text-[11px]"><span class="font-semibold">Food &amp; Dining</span><span class="text-slate-500">82%</span></div>
+            <div class="mt-1.5 h-2 rounded-full bg-slate-100"><div class="h-2 w-[82%] rounded-full bg-amber-400"></div></div>
+            <div class="mt-3 flex justify-between text-[11px]"><span class="font-semibold">Transport</span><span class="text-slate-500">45%</span></div>
+            <div class="mt-1.5 h-2 rounded-full bg-slate-100"><div class="h-2 w-[45%] rounded-full bg-brand-500"></div></div>
+          </div>
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center justify-between rounded-xl bg-white p-3 text-xs shadow-sm"><span>🛒 Groceries</span><span class="font-semibold text-rose-500">−₱1,240</span></div>
+            <div class="flex items-center justify-between rounded-xl bg-white p-3 text-xs shadow-sm"><span>💼 Salary</span><span class="font-semibold text-brand-600">+₱32,000</span></div>
+            <div class="flex items-center justify-between rounded-xl bg-white p-3 text-xs shadow-sm"><span>⚡ Electricity</span><span class="font-semibold text-rose-500">−₱2,180</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+    <div class="mx-auto max-w-2xl text-center">
+      <h2 class="text-3xl font-bold tracking-tight text-slate-900">Everything you need to stay on budget</h2>
+      <p class="mt-3 text-slate-600">Simple enough for every day, detailed enough to plan the year.</p>
+    </div>
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">💸</div><h3 class="mt-3 font-semibold text-slate-900">Income &amp; expense tracking</h3><p class="mt-2 text-sm text-slate-600">Log transactions in seconds with categories, notes and dates — across cash, bank, e-wallet and credit accounts.</p></div>
+      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">🎯</div><h3 class="mt-3 font-semibold text-slate-900">Budgets &amp; alerts</h3><p class="mt-2 text-sm text-slate-600">Set a monthly limit per category and get notified before you overspend.</p></div>
+      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">📊</div><h3 class="mt-3 font-semibold text-slate-900">Reports &amp; charts</h3><p class="mt-2 text-sm text-slate-600">See spending by category, monthly trends and income vs. expenses. Export to CSV anytime.</p></div>
+      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">🏦</div><h3 class="mt-3 font-semibold text-slate-900">Savings goals</h3><p class="mt-2 text-sm text-slate-600">Save for a laptop, a trip or an emergency fund and watch your progress grow.</p></div>
+      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">🔁</div><h3 class="mt-3 font-semibold text-slate-900">Recurring bills</h3><p class="mt-2 text-sm text-slate-600">Rent, subscriptions and salary are recorded automatically on schedule.</p></div>
+      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">🔒</div><h3 class="mt-3 font-semibold text-slate-900">Private &amp; synced</h3><p class="mt-2 text-sm text-slate-600">Your data is protected per account and stays in sync between your phone and PC.</p></div>
+    </div>
+  </section>
+
+  <!-- Download -->
+  <section id="download" class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="mx-auto max-w-2xl text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-slate-900">Download FinTrack</h2>
+        <p class="mt-3 text-slate-600">Sign in with the same account on both devices to keep everything in sync.</p>
+      </div>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-2">
+        <!-- Android card -->
+        <article class="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" data-platform="android">
+          <div class="flex items-center gap-3">
+            <div class="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-600">
+              <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.84-3.18a.38.38 0 00-.66-.38l-1.86 3.22a11.5 11.5 0 00-9.84 0L5.22 5.92a.38.38 0 10-.66.38L6.4 9.48A10.8 10.8 0 001 18h22a10.8 10.8 0 00-5.4-8.52zM7 15.25a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5zm10 0a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5z"/></svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900">Android</h3>
+              <p class="text-sm text-slate-500">Android 7.0 or newer · APK</p>
+            </div>
+          </div>
+          <p class="meta mt-4 text-sm text-slate-500">Loading latest version…</p>
+          <div class="notes mt-3 hidden whitespace-pre-line rounded-lg bg-slate-50 p-3 text-sm text-slate-600"></div>
+          <a class="download mt-6 inline-flex items-center justify-center rounded-xl bg-brand-600 px-5 py-3 font-semibold text-white opacity-50 pointer-events-none hover:bg-brand-700" href="#">Download APK</a>
+          <details class="mt-5 text-sm text-slate-600">
+            <summary class="font-medium text-slate-800">How to install</summary>
+            <ol class="mt-2 list-decimal space-y-1 pl-5">
+              <li>Tap <b>Download APK</b> and open the file when it finishes.</li>
+              <li>If asked, allow your browser to <b>install unknown apps</b> (Settings → Apps → Special access).</li>
+              <li>Tap <b>Install</b>, then open FinTrack and sign in.</li>
+            </ol>
+          </details>
+        </article>
+
+        <!-- Windows card -->
+        <article class="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" data-platform="windows">
+          <div class="flex items-center gap-3">
+            <div class="grid h-12 w-12 place-items-center rounded-xl bg-sky-50 text-sky-600">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5l7.5-1v7H3v-6zm0 13l7.5 1v-7H3v6zm8.5 1.2L21 21v-8.5h-9.5v7.2zm0-15.4v7.2H21V3l-9.5 1.3z"/></svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900">Windows</h3>
+              <p class="text-sm text-slate-500">Windows 10 or 11 (64-bit) · Installer</p>
+            </div>
+          </div>
+          <p class="meta mt-4 text-sm text-slate-500">Loading latest version…</p>
+          <div class="notes mt-3 hidden whitespace-pre-line rounded-lg bg-slate-50 p-3 text-sm text-slate-600"></div>
+          <a class="download mt-6 inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white opacity-50 pointer-events-none hover:bg-slate-800" href="#">Download installer</a>
+          <details class="mt-5 text-sm text-slate-600">
+            <summary class="font-medium text-slate-800">How to install</summary>
+            <ol class="mt-2 list-decimal space-y-1 pl-5">
+              <li>Run the downloaded <b>FinTrack-Setup.exe</b>.</li>
+              <li>If Windows SmartScreen appears, click <b>More info → Run anyway</b>.</li>
+              <li>Follow the setup steps, then launch FinTrack from the Start menu.</li>
+            </ol>
+          </details>
+        </article>
+      </div>
+      <p id="dl-error" class="mt-6 hidden text-center text-sm text-rose-600">Couldn't load the latest release. Please refresh the page or try again later.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="mx-auto max-w-3xl px-4 py-20 sm:px-6">
+    <h2 class="text-center text-3xl font-bold tracking-tight text-slate-900">Frequently asked questions</h2>
+    <div class="mt-10 divide-y divide-slate-200 border-y border-slate-200">
+      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Is FinTrack free?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">Yes. FinTrack is free to download and use.</p></details>
+      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Why isn't it on the Play Store?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">We distribute the app directly from this site. Android will ask you to allow installs from your browser the first time — that's expected. The app checks for updates automatically.</p></details>
+      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Why does Windows show a SmartScreen warning?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">New installers without a paid code-signing certificate trigger SmartScreen. Click <b>More info → Run anyway</b> to continue.</p></details>
+      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Is my financial data safe?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">Your data is stored in a secure cloud database with row-level security, so only your signed-in account can read or change it. We never sell your data. See the <a href="privacy.html" class="text-brand-600 underline">privacy policy</a>.</p></details>
+      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Can I use it on my phone and PC at the same time?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">Yes. Sign in with the same email or Google account and your transactions, budgets and goals stay in sync.</p></details>
+      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Can I export my data?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">Yes — the Reports screen exports your transactions to a CSV file you can open in Excel or Google Sheets.</p></details>
+    </div>
+  </section>
+
+  <footer class="border-t border-slate-100">
+    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-slate-500 sm:flex-row sm:px-6">
+      <p>© <span id="year"></span> FinTrack</p>
+      <div class="flex gap-6"><a href="privacy.html" class="hover:text-slate-800">Privacy policy</a><a href="#download" class="hover:text-slate-800">Download</a></div>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function formatSize(bytes) {
+      if (!bytes) return '';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    async function loadReleases() {
+      const { supabaseUrl, supabaseAnonKey } = window.FINTRACK_CONFIG;
+      const url = supabaseUrl + '/rest/v1/app_versions'
+        + '?select=platform,version,build_number,download_url,file_size,release_notes,published_at'
+        + '&order=published_at.desc&limit=20';
+      const res = await fetch(url, { headers: { apikey: supabaseAnonKey, Authorization: 'Bearer ' + supabaseAnonKey } });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const rows = await res.json();
+
+      const latest = {};
+      for (const row of rows) if (!latest[row.platform]) latest[row.platform] = row;
+
+      for (const platform of ['android', 'windows']) {
+        const card = document.querySelector('[data-platform="' + platform + '"]');
+        const release = latest[platform];
+        const meta = card.querySelector('.meta');
+        const button = card.querySelector('.download');
+        if (!release) {
+          meta.textContent = 'Coming soon.';
+          continue;
+        }
+        meta.textContent = ['Version ' + release.version, formatSize(release.file_size), 'Released ' + formatDate(release.published_at)]
+          .filter(Boolean).join(' · ');
+        if (release.release_notes) {
+          const notes = card.querySelector('.notes');
+          notes.textContent = release.release_notes;
+          notes.classList.remove('hidden');
+        }
+        button.href = release.download_url;
+        button.classList.remove('opacity-50', 'pointer-events-none');
+        document.querySelectorAll('.dl-link[data-dl="' + platform + '"]').forEach(a => { a.href = release.download_url; });
+      }
+
+      const newest = rows[0];
+      if (newest) document.getElementById('hero-version').textContent = 'Latest version ' + newest.version;
+    }
+
+    loadReleases().catch(err => {
+      console.error(err);
+      document.getElementById('dl-error').classList.remove('hidden');
+      document.querySelectorAll('[data-platform] .meta').forEach(m => { m.textContent = 'Unavailable right now.'; });
+    });
+  </script>
+</body>
+</html>
