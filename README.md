@@ -49,10 +49,13 @@ To try the recurring job by hand, move a rule's `next_run_on` to yesterday in St
    ```
 2. Go to **Database → Extensions** and check that `pg_cron` is enabled. Migration 0005 schedules the daily job.
 3. Go to **Authentication → URL Configuration**. Set **Site URL** to `io.fintrack.app://login-callback`, and add the same value under **Redirect URLs**.
-4. Go to **Authentication → Providers → Google**. Enable it, paste the **Web** client ID and secret (see below), and turn on **Skip nonce check**, which Android native sign-in needs.
+4. (Only if using Google sign-in.) Go to **Authentication → Providers → Google**. Enable it, paste the **Web** client ID and secret (see below), and turn on **Skip nonce check**, which Android native sign-in needs.
 5. Go to **Storage → Settings** and raise the upload size limit if your builds are larger than 50 MB.
 
 ### Google OAuth clients (Google Cloud Console)
+
+Optional. Google sign-in is currently **off**: the button is hidden unless `ENABLE_GOOGLE_SIGN_IN` is `true` in `env.json`, and the provider is disabled in `supabase/config.toml`. To turn it on, create the clients below, enable the provider, then set the flag.
+
 
 - **Web application** client: its redirect URI is `https://YOUR-PROJECT-REF.supabase.co/auth/v1/callback`. Its ID goes in Supabase and in `GOOGLE_WEB_CLIENT_ID`.
 - **Android** client: package name `io.fintrack.fintrack`, plus the SHA-1 of **both** your debug keystore and your upload keystore:

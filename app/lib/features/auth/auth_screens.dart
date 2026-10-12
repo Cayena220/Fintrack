@@ -37,14 +37,7 @@ class _AuthFrame extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Center(
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(18)),
-                    child: Icon(Icons.show_chart_rounded, color: theme.colorScheme.onPrimary, size: 36),
-                  ),
-                ),
+                Center(child: Image.asset('assets/logo.png', width: 72, height: 72, semanticLabel: 'FinTrack')),
                 const SizedBox(height: 20),
                 Text(title, textAlign: TextAlign.center, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 6),
@@ -176,18 +169,20 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
               : const Text('Sign in'),
         ),
-        const SizedBox(height: 16),
-        const Row(children: [
-          Expanded(child: Divider()),
-          Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('or')),
-          Expanded(child: Divider()),
-        ]),
-        const SizedBox(height: 16),
-        OutlinedButton.icon(
-          onPressed: _busy ? null : () => _run(() => signInWithGoogle(ref.read(supabaseProvider))),
-          icon: const Text('G', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-          label: const Text('Continue with Google'),
-        ),
+        if (Env.googleSignInEnabled) ...[
+          const SizedBox(height: 16),
+          const Row(children: [
+            Expanded(child: Divider()),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('or')),
+            Expanded(child: Divider()),
+          ]),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: _busy ? null : () => _run(() => signInWithGoogle(ref.read(supabaseProvider))),
+            icon: const Text('G', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+            label: const Text('Continue with Google'),
+          ),
+        ],
         const SizedBox(height: 24),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           const Text("Don't have an account?"),
