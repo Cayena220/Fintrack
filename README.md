@@ -17,7 +17,7 @@ scripts/     publish-release.mjs: uploads a build and records it in app_versions
 | Tool | Needed for |
 |---|---|
 | Flutter SDK (stable) | Everything in `app/` |
-| Android Studio + Android SDK | Android builds and the emulator |
+| Android SDK + JDK 17: either Android Studio, or just the SDK command-line tools with `platforms;android-36`, `build-tools;36.0.0` and `ndk;28.2.13676358` (then `flutter config --android-sdk <sdk> --jdk-dir <jdk17>`) | Android builds |
 | Visual Studio 2022+ with **Desktop development with C++**, including **C++ CMake tools for Windows** and **C++ ATL** (the notifications plugin needs ATL) | Windows builds |
 | Docker Desktop | Running Supabase locally |
 | Node 20+ | Supabase CLI (`npx supabase`) and the publish script |
@@ -99,10 +99,10 @@ copy app\android\key.properties.example app\android\key.properties   # then fill
 
 ```sh
 cd app
-flutter build apk --release --dart-define-from-file=env.json
+flutter build apk --release --target-platform android-arm,android-arm64 --dart-define-from-file=env.json
 ```
 
-The APK is written to `app/build/app/outputs/flutter-apk/app-release.apk`. Without `key.properties`, the release build falls back to the debug key. That's fine for local testing, but never publish a debug-signed build.
+The APK is written to `app/build/app/outputs/flutter-apk/app-release.apk`. `--target-platform` leaves out x86_64, which only emulators and Chromebooks use. That keeps the APK around 37 MB, under the 50 MB Storage upload limit, where the default build is about 58 MB. Don't use `--split-per-abi`: it adds 1000× the ABI number to the build number Android reports, which breaks the in-app update check. Without `key.properties`, the release build falls back to the debug key. That's fine for local testing, but never publish a debug-signed build.
 
 ### Windows installer
 
