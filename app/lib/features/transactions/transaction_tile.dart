@@ -21,7 +21,7 @@ class TransactionTile extends ConsumerWidget {
     final accounts = ref.watch(accountMapProvider);
     final category = ref.watch(categoryMapProvider)[tx.categoryId];
     final account = accounts[tx.accountId];
-    final pending = ref.watch(pendingTxIdsProvider).contains(tx.id);
+    final pending = ref.watch(syncControllerProvider.select((s) => s.pendingIds.contains(tx.id)));
 
     final String title;
     final String icon;

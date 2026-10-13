@@ -10,6 +10,7 @@ import '../theme.dart';
 /// Turns exceptions into short, human messages.
 String friendlyError(Object error) {
   if (error is AuthException) return error.message;
+  if (error is SyncRejected) return error.message;
   if (error is PostgrestException) {
     switch (error.code) {
       case '23503':

@@ -71,13 +71,17 @@ core/                  Shared pieces: env config, router, theme, formatters, com
 data/
   models.dart          Plain Dart classes for accounts, transactions, budgets, ...
   repository.dart      Every Supabase query lives here
+  offline_store.dart   On-device copies of fetched data and the queue of unsynced transactions
+  sync.dart            Uploads the queue when the connection is back; the offline banner's state
   providers.dart       Riverpod providers the screens watch
 features/              One folder per screen: auth, dashboard, accounts, transactions,
                        budgets, categories, reports, goals, recurring, settings
 services/              Notifications, the update check, the Windows URL scheme
 ```
 
-Screens never query Supabase directly. They watch a provider, the provider calls the repository, and the repository runs the query. Unit tests in `app/test/` cover budget maths, recurrence dates, formatters and the transaction form.
+Screens never query Supabase directly. They watch a provider, the provider calls the repository, and the repository runs the query. Unit tests in `app/test/` cover budget maths, recurrence dates, formatters, the transaction form, and offline syncing (against a fake Supabase server).
+
+**Offline mode.** Every list the repository fetches is also saved on the device, and is shown instead when there's no connection. Transactions can be added, edited and deleted offline. They're saved to a queue on the device first, with an ID generated on the device, then uploaded right away or as soon as the connection returns. Lists, account balances and category totals include queued changes, and a banner shows "You're offline" or how many changes are waiting. If the server refuses a queued change (for example, its account was deleted on another device), it's dropped and the app says why. Other changes (accounts, budgets, goals, categories) still need a connection.
 
 Settings that differ between environments (Supabase URL, publishable key, feature flags) aren't hard-coded. They come from `app/env.json` and get baked in at build time with `--dart-define-from-file=env.json`. If they're missing, the app shows a "not configured" screen.
 
@@ -116,6 +120,8 @@ The result is `installer/Output/FinTrack-Setup-x.y.z.exe`, about 12 MB.
 `flutter build apk --release` uses Gradle and the Android SDK to compile the same Dart code into an APK. This machine uses the Android SDK command-line tools and JDK 17, without Android Studio. The APK is signed with the release keystore `app/android/upload-keystore.jks`, whose passwords are in `app/android/key.properties`. Both files are git-ignored. Android only installs an update if it's signed with the same key, so **back both files up**.
 
 The build only includes ARM code (`--target-platform android-arm,android-arm64`), which covers real phones. That keeps the APK around 37 MB, under Supabase's 50 MB upload limit.
+
+`app/android/gradle.properties` limits Gradle to a 2 GB heap, sized for this 7 GB PC. The Flutter template's 8 GB made the build daemon run Windows out of memory, and it left `hs_err_pid*.log` crash files behind. If VS Code's Java extensions are installed, turn off their Gradle import for this folder (`"java.import.gradle.enabled": false` and `"gradle.autoDetect": "off"` in `.vscode/settings.json`). Otherwise they import every plugin's Android project through `app/windows/flutter/ephemeral/.plugin_symlinks` and start one Gradle daemon per Gradle version.
 
 ### The website (`website/`)
 

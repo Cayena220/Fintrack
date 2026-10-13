@@ -70,18 +70,19 @@ class _AppShellState extends ConsumerState<AppShell> {
     final index = widget.shell.currentIndex;
     final sync = ref.watch(syncControllerProvider);
     ref.listen(syncControllerProvider.select((s) => s.failures), (_, failures) {
-      for (final message in failures) {
-        showSnack(context, message);
-      }
+      if (failures.isEmpty) return;
+      showSnack(context,
+          failures.length == 1 ? failures.single : '${failures.length} changes could not be saved. ${failures.first}');
     });
     final showBanner = !sync.online || sync.pending > 0;
-    final body = !showBanner
-        ? widget.shell
-        : Column(children: [
-            _SyncBanner(status: sync, onRetry: () => ref.read(syncControllerProvider.notifier).sync()),
-            // The banner already covers the status bar.
-            Expanded(child: MediaQuery.removePadding(context: context, removeTop: true, child: widget.shell)),
-          ]);
+    // Same tree with or without the banner, so the tabs keep their state.
+    final body = Column(children: [
+      if (showBanner) _SyncBanner(status: sync, onRetry: () => ref.read(syncControllerProvider.notifier).sync()),
+      Expanded(
+        // The banner already covers the status bar.
+        child: MediaQuery.removePadding(context: context, removeTop: showBanner, child: widget.shell),
+      ),
+    ]);
 
     if (!wide) {
       return Scaffold(
@@ -135,10 +136,12 @@ class _SyncBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final waiting = status.pending == 0
-        ? ''
-        : '${status.pending} ${status.pending == 1 ? 'change' : 'changes'} waiting to sync';
-    final text = status.online ? waiting : (waiting.isEmpty ? "You're offline" : "You're offline · $waiting");
+    final changes = '${status.pending} ${status.pending == 1 ? 'change' : 'changes'}';
+    final text = status.online
+        ? '$changes waiting to sync'
+        : status.pending == 0
+            ? "You're offline. Showing saved data."
+            : "You're offline. $changes will sync when you reconnect.";
     return Material(
       color: scheme.secondaryContainer,
       child: SafeArea(

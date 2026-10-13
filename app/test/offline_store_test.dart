@@ -2,6 +2,7 @@ import 'package:fintrack/data/models.dart';
 import 'package:fintrack/data/offline_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Transaction _tx({
   String? id,
@@ -92,6 +93,35 @@ void main() {
 
     await store.completeOp(op);
     expect(store.pendingOps(), isEmpty);
+  });
+
+  test('a refused change is dropped, unless it was edited meanwhile', () async {
+    final saved = await store.queueSave(_tx());
+    final uploading = store.pendingOps().single;
+    await store.queueSave(_tx(id: saved.id, amount: 5000), original: saved);
+    await store.dropOp(uploading);
+    expect(store.pendingOps().single.after!.amount, 5000, reason: 'the edit may fix the problem');
+    expect(store.pendingOps().single.isInsert, isTrue);
+
+    await store.dropOp(store.pendingOps().single);
+    expect(store.pendingOps(), isEmpty);
+  });
+
+  test('clearing the cache keeps the queue', () async {
+    await store.queueSave(_tx());
+    await store.writeRows('accounts', [
+      {'id': 'a1'},
+    ]);
+    await store.clearCache();
+    expect(store.readRows('accounts'), isNull);
+    expect(store.pendingOps(), hasLength(1));
+  });
+
+  test('network errors and outages are told apart from rejections', () {
+    expect(isNetworkError(Exception('ClientException with SocketException: Failed host lookup')), isTrue);
+    expect(isNetworkError(const PostgrestException(message: '<html>', code: '503')), isTrue);
+    expect(isNetworkError(const PostgrestException(message: 'fk', code: '23503')), isFalse);
+    expect(isNetworkError(const PostgrestException(message: 'jwt', code: 'PGRST301')), isFalse);
   });
 
   test('the queue and cache belong to the signed-in user', () async {

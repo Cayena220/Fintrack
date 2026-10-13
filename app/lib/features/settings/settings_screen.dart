@@ -96,6 +96,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
     if (!ok) return;
     try {
+      // Saved copies of this user's data shouldn't outlive the session.
+      await ref.read(repositoryProvider).clearCache();
       // The router redirects to the sign-in page on the auth change.
       await signOutEverywhere(ref.read(supabaseProvider));
     } catch (e) {

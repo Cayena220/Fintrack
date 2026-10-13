@@ -8,10 +8,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/formatters.dart';
 import 'models.dart';
 
-/// True for failures caused by having no (working) connection, as opposed to
-/// the server rejecting the request.
+/// True for failures caused by having no (working) connection or the server
+/// being unavailable, as opposed to the server rejecting the request.
 bool isNetworkError(Object error) {
   if (error is TimeoutException || error is AuthRetryableFetchException) return true;
+  if (error is PostgrestException) {
+    // Non-JSON error pages (gateway errors, a paused project) carry the HTTP status as the code.
+    final status = int.tryParse(error.code ?? '');
+    return status != null && status >= 500 && status < 600;
+  }
   final text = error.toString();
   return text.contains('SocketException') ||
       text.contains('ClientException') ||
@@ -31,6 +36,16 @@ String newUuid() {
   final hex = b.map((x) => x.toRadixString(16).padLeft(2, '0')).join();
   return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-'
       '${hex.substring(16, 20)}-${hex.substring(20)}';
+}
+
+/// A queued change the server refused, for example because its account was
+/// deleted on another device. It has been removed from the queue.
+class SyncRejected implements Exception {
+  const SyncRejected(this.message);
+  final String message;
+
+  @override
+  String toString() => message;
 }
 
 /// A transaction change that has not reached the server yet. There is at most
@@ -84,9 +99,23 @@ class OfflineStore {
     }
   }
 
+  bool hasRows(String name) {
+    final key = _key('cache:$name');
+    return key != null && _prefs.containsKey(key);
+  }
+
   Future<void> writeRows(String name, List<Map<String, dynamic>> rows) async {
     final key = _key('cache:$name');
     if (key != null) await _prefs.setString(key, jsonEncode(rows));
+  }
+
+  /// Forgets the signed-in user's cached rows (the queue is kept).
+  Future<void> clearCache() async {
+    final prefix = _key('cache:');
+    if (prefix == null) return;
+    for (final key in _prefs.getKeys().where((k) => k.startsWith(prefix)).toList()) {
+      await _prefs.remove(key);
+    }
   }
 
   // ----------------------------------------------------------------- outbox
@@ -140,17 +169,29 @@ class OfflineStore {
     await _writeOps(ops);
   }
 
+  static bool _same(PendingTxOp a, PendingTxOp b) => jsonEncode(a.toJson()) == jsonEncode(b.toJson());
+
   /// Removes [op] once it is on the server, unless it was edited meanwhile.
   Future<void> completeOp(PendingTxOp op) async {
     final ops = pendingOps().toList();
     final i = ops.indexWhere((o) => o.id == op.id);
     if (i < 0) return;
-    if (jsonEncode(ops[i].toJson()) == jsonEncode(op.toJson())) {
+    if (_same(ops[i], op)) {
       ops.removeAt(i);
     } else {
       // Edited while uploading: the server now has op.after as its version.
       ops[i] = PendingTxOp(id: op.id, before: op.after, after: ops[i].after);
     }
+    await _writeOps(ops);
+  }
+
+  /// Removes [op] after the server refused it. An edit made meanwhile stays
+  /// queued, since it may fix the problem.
+  Future<void> dropOp(PendingTxOp op) async {
+    final ops = pendingOps().toList();
+    final i = ops.indexWhere((o) => o.id == op.id);
+    if (i < 0 || !_same(ops[i], op)) return;
+    ops.removeAt(i);
     await _writeOps(ops);
   }
 }

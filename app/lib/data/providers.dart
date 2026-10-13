@@ -12,7 +12,9 @@ final supabaseProvider = Provider<SupabaseClient>((ref) => Supabase.instance.cli
 
 final repositoryProvider = Provider<FinanceRepository>((ref) {
   final db = ref.watch(supabaseProvider);
-  return FinanceRepository(db, OfflineStore(ref.watch(sharedPreferencesProvider), () => db.auth.currentUser?.id));
+  final repo = FinanceRepository(db, OfflineStore(ref.watch(sharedPreferencesProvider), () => db.auth.currentUser?.id));
+  ref.onDispose(repo.dispose);
+  return repo;
 });
 
 /// Emits on every sign-in / sign-out / token refresh.
