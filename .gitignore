@@ -26,3 +26,7 @@ installer/Output/
 
 # Vercel
 .vercel/
+
+# JVM crash logs (e.g. from Gradle running out of memory)
+hs_err_pid*.log
+replay_pid*.log
