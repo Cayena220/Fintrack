@@ -7,6 +7,7 @@ import '../../core/theme.dart';
 import '../../core/widgets/common.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
+import '../../data/sync.dart';
 
 class TransactionTile extends ConsumerWidget {
   const TransactionTile({super.key, required this.tx, this.showDate = false});
@@ -20,6 +21,7 @@ class TransactionTile extends ConsumerWidget {
     final accounts = ref.watch(accountMapProvider);
     final category = ref.watch(categoryMapProvider)[tx.categoryId];
     final account = accounts[tx.accountId];
+    final pending = ref.watch(pendingTxIdsProvider).contains(tx.id);
 
     final String title;
     final String icon;
@@ -48,6 +50,14 @@ class TransactionTile extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(left: 6),
             child: Icon(Icons.repeat, size: 14, color: Theme.of(context).colorScheme.outline),
+          ),
+        if (pending)
+          Padding(
+            padding: const EdgeInsets.only(left: 6),
+            child: Tooltip(
+              message: 'Waiting to sync',
+              child: Icon(Icons.cloud_upload_outlined, size: 14, color: Theme.of(context).colorScheme.outline),
+            ),
           ),
       ]),
       subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),

@@ -169,6 +169,25 @@ class Transaction {
         'note': (note == null || note!.trim().isEmpty) ? null : note!.trim(),
         'to_account_id': type == TxType.transfer ? toAccountId : null,
       };
+
+  /// Full row, readable by [Transaction.fromJson]. Used for the offline queue.
+  Map<String, dynamic> toJson() => {
+        ...toWriteJson(),
+        'id': id,
+        'recurring_rule_id': recurringRuleId,
+      };
+
+  Transaction copyWithId(String newId) => Transaction(
+        id: newId,
+        accountId: accountId,
+        categoryId: categoryId,
+        type: type,
+        amount: amount,
+        occurredOn: occurredOn,
+        note: note,
+        toAccountId: toAccountId,
+        recurringRuleId: recurringRuleId,
+      );
 }
 
 /// One row of the monthly_category_totals view.

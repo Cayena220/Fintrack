@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../data/offline_store.dart';
 import '../formatters.dart';
 import '../icons.dart';
 import '../theme.dart';
@@ -22,9 +23,8 @@ String friendlyError(Object error) {
     }
     return error.message;
   }
-  final text = error.toString();
-  if (text.contains('SocketException') || text.contains('ClientException')) {
-    return 'No internet connection. Please try again.';
+  if (isNetworkError(error)) {
+    return "You're offline. Transactions save offline, but this change needs an internet connection.";
   }
   return 'Something went wrong. Please try again.';
 }

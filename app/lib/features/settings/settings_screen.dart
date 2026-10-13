@@ -6,6 +6,7 @@ import '../../core/formatters.dart';
 import '../../core/settings.dart';
 import '../../core/widgets/common.dart';
 import '../../data/providers.dart';
+import '../../data/sync.dart';
 import '../../services/update_service.dart';
 import '../auth/google_auth.dart';
 
@@ -82,10 +83,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _signOut() async {
+    final pending = ref.read(syncControllerProvider).pending;
     final ok = await confirmDialog(
       context,
       title: 'Sign out?',
-      message: 'Your data stays saved in your account.',
+      message: pending == 0
+          ? 'Your data stays saved in your account.'
+          : '$pending ${pending == 1 ? 'change has' : 'changes have'} not synced yet. '
+              'They stay on this device and sync the next time you sign in here.',
       confirmLabel: 'Sign out',
       destructive: false,
     );

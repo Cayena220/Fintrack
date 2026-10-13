@@ -71,8 +71,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     }
     setState(() => _saving = true);
     final repo = ref.read(repositoryProvider);
+    final messenger = ScaffoldMessenger.of(context);
     try {
-      await repo.saveTransaction(Transaction(
+      final synced = await repo.saveTransaction(Transaction(
         id: widget.existing?.id,
         accountId: _accountId!,
         categoryId: _type == TxType.transfer ? null : _categoryId,
@@ -82,8 +83,11 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
         note: _note.text,
         toAccountId: _type == TxType.transfer ? _toAccountId : null,
         recurringRuleId: widget.existing?.recurringRuleId,
-      ));
+      ), original: widget.existing);
       refreshFinanceData(ref);
+      if (!synced) {
+        messenger.showSnackBar(const SnackBar(content: Text("Saved on this device. It will sync when you're back online."), behavior: SnackBarBehavior.floating));
+      }
       if (_type == TxType.expense) {
         // Fire-and-forget: alerts must not delay closing the form.
         checkBudgetAlerts(repo, ref.read(currencyProvider)).ignore();
@@ -100,7 +104,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
     final ok = await confirmDialog(context, title: 'Delete transaction?', message: 'This cannot be undone.');
     if (!ok) return;
     try {
-      await ref.read(repositoryProvider).deleteTransaction(widget.existing!.id!);
+      await ref.read(repositoryProvider).deleteTransaction(widget.existing!);
       refreshFinanceData(ref);
       if (mounted) context.pop();
     } catch (e) {
@@ -146,10 +150,15 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                   maxWidth: 600,
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                     SegmentedButton<TxType>(
+                      // No checkmark and scale-down labels so the words stay on one line on narrow phones.
+                      showSelectedIcon: false,
+                      style: const ButtonStyle(
+                        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8)),
+                      ),
                       segments: const [
-                        ButtonSegment(value: TxType.expense, label: Text('Expense'), icon: Icon(Icons.north_east)),
-                        ButtonSegment(value: TxType.income, label: Text('Income'), icon: Icon(Icons.south_west)),
-                        ButtonSegment(value: TxType.transfer, label: Text('Transfer'), icon: Icon(Icons.swap_horiz)),
+                        ButtonSegment(value: TxType.expense, label: _SegmentLabel('Expense'), icon: Icon(Icons.north_east)),
+                        ButtonSegment(value: TxType.income, label: _SegmentLabel('Income'), icon: Icon(Icons.south_west)),
+                        ButtonSegment(value: TxType.transfer, label: _SegmentLabel('Transfer'), icon: Icon(Icons.swap_horiz)),
                       ],
                       selected: {_type},
                       onSelectionChanged: (s) => setState(() {
@@ -248,5 +257,16 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
         },
       ),
     );
+  }
+}
+
+class _SegmentLabel extends StatelessWidget {
+  const _SegmentLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(fit: BoxFit.scaleDown, child: Text(text, maxLines: 1, softWrap: false));
   }
 }

@@ -36,9 +36,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     final ok = await confirmDialog(context, title: 'Delete transaction?', message: 'This cannot be undone.');
     if (!ok) return;
     try {
-      await ref.read(repositoryProvider).deleteTransaction(tx.id!);
+      final synced = await ref.read(repositoryProvider).deleteTransaction(tx);
       refreshFinanceData(ref);
-      if (mounted) showSnack(context, 'Transaction deleted');
+      if (mounted) {
+        showSnack(context, synced ? 'Transaction deleted' : "Deleted on this device. It will sync when you're back online.");
+      }
     } catch (e) {
       if (mounted) showError(context, e);
     }
@@ -197,7 +199,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                       Card(
                         child: Padding(
                           padding: const EdgeInsets.all(14),
-                          child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                          child: Row(children: [
                             _Total(label: 'Income', child: MoneyText(income, currency: currency, signed: false)),
                             _Total(label: 'Expenses', child: MoneyText(-expense, currency: currency, signed: false)),
                             _Total(label: 'Net', child: MoneyText(income - expense, currency: currency)),
@@ -254,10 +256,13 @@ class _Total extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Text(label, style: Theme.of(context).textTheme.labelMedium),
-      const SizedBox(height: 4),
-      child,
-    ]);
+    // Equal-width columns, centered, with amounts shrinking to fit on narrow phones.
+    return Expanded(
+      child: Column(children: [
+        Text(label, textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelMedium),
+        const SizedBox(height: 4),
+        FittedBox(fit: BoxFit.scaleDown, child: child),
+      ]),
+    );
   }
 }

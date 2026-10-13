@@ -2,12 +2,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/formatters.dart';
+import '../core/settings.dart';
 import 'models.dart';
+import 'offline_store.dart';
 import 'repository.dart';
+import 'sync.dart';
 
 final supabaseProvider = Provider<SupabaseClient>((ref) => Supabase.instance.client);
 
-final repositoryProvider = Provider<FinanceRepository>((ref) => FinanceRepository(ref.watch(supabaseProvider)));
+final repositoryProvider = Provider<FinanceRepository>((ref) {
+  final db = ref.watch(supabaseProvider);
+  return FinanceRepository(db, OfflineStore(ref.watch(sharedPreferencesProvider), () => db.auth.currentUser?.id));
+});
 
 /// Emits on every sign-in / sign-out / token refresh.
 final authStateProvider = StreamProvider<AuthState>((ref) => ref.watch(supabaseProvider).auth.onAuthStateChange);
@@ -90,13 +96,4 @@ final recurringRulesProvider = FutureProvider<List<RecurringRule>>((ref) async {
 });
 
 /// Reloads everything derived from transactions. Call after any write.
-void refreshFinanceData(WidgetRef ref) {
-  ref.invalidate(accountsProvider);
-  ref.invalidate(transactionsProvider);
-  ref.invalidate(recentTransactionsProvider);
-  ref.invalidate(categoryTotalsProvider);
-  ref.invalidate(budgetsProvider);
-  ref.invalidate(goalsProvider);
-  ref.invalidate(goalContributionsProvider);
-  ref.invalidate(recurringRulesProvider);
-}
+void refreshFinanceData(WidgetRef ref) => ref.read(syncControllerProvider.notifier).reloadData();

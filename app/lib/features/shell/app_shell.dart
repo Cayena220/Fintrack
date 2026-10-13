@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/widgets/common.dart';
 import '../../data/providers.dart';
+import '../../data/sync.dart';
 import '../../services/notification_service.dart';
 import '../../services/update_service.dart';
 import '../budgets/budget_alerts.dart';
@@ -66,10 +68,24 @@ class _AppShellState extends ConsumerState<AppShell> {
   Widget build(BuildContext context) {
     final wide = MediaQuery.sizeOf(context).width >= 840;
     final index = widget.shell.currentIndex;
+    final sync = ref.watch(syncControllerProvider);
+    ref.listen(syncControllerProvider.select((s) => s.failures), (_, failures) {
+      for (final message in failures) {
+        showSnack(context, message);
+      }
+    });
+    final showBanner = !sync.online || sync.pending > 0;
+    final body = !showBanner
+        ? widget.shell
+        : Column(children: [
+            _SyncBanner(status: sync, onRetry: () => ref.read(syncControllerProvider.notifier).sync()),
+            // The banner already covers the status bar.
+            Expanded(child: MediaQuery.removePadding(context: context, removeTop: true, child: widget.shell)),
+          ]);
 
     if (!wide) {
       return Scaffold(
-        body: widget.shell,
+        body: body,
         bottomNavigationBar: NavigationBar(
           selectedIndex: index,
           onDestinationSelected: _go,
@@ -103,8 +119,47 @@ class _AppShellState extends ConsumerState<AppShell> {
           ],
         ),
         const VerticalDivider(width: 1),
-        Expanded(child: widget.shell),
+        Expanded(child: body),
       ]),
+    );
+  }
+}
+
+/// Thin strip at the top while offline or while changes wait to upload.
+class _SyncBanner extends StatelessWidget {
+  const _SyncBanner({required this.status, required this.onRetry});
+
+  final SyncStatus status;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final waiting = status.pending == 0
+        ? ''
+        : '${status.pending} ${status.pending == 1 ? 'change' : 'changes'} waiting to sync';
+    final text = status.online ? waiting : (waiting.isEmpty ? "You're offline" : "You're offline · $waiting");
+    return Material(
+      color: scheme.secondaryContainer,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 6, 8, 6),
+          child: Row(children: [
+            Icon(status.online ? Icons.cloud_upload_outlined : Icons.cloud_off_outlined,
+                size: 18, color: scheme.onSecondaryContainer),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(text,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSecondaryContainer)),
+            ),
+            if (status.online && status.pending > 0)
+              TextButton(onPressed: onRetry, child: const Text('Sync now'))
+            else
+              const SizedBox(height: 36),
+          ]),
+        ),
+      ),
     );
   }
 }
