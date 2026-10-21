@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/formatters.dart';
+import '../../core/theme.dart';
 import '../../core/widgets/common.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
@@ -19,7 +21,7 @@ class RecurringScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'add-recurring',
         onPressed: () => context.push('/recurring/edit'),
-        icon: const Icon(Icons.add),
+        icon: const Icon(Symbols.add_rounded),
         label: const Text('New rule'),
       ),
       body: AsyncView(
@@ -28,7 +30,7 @@ class RecurringScreen extends ConsumerWidget {
         builder: (rules) {
           if (rules.isEmpty) {
             return EmptyState(
-              icon: Icons.event_repeat_outlined,
+              icon: Symbols.event_repeat_rounded,
               title: 'No recurring items',
               message: 'Add bills, subscriptions or your salary once and FinTrack records them on schedule.',
               action: FilledButton(
@@ -51,7 +53,7 @@ class RecurringScreen extends ConsumerWidget {
                         title: const Text('Estimated per month'),
                         subtitle: Text('${active.length} active rule${active.length == 1 ? '' : 's'}'),
                         trailing: MoneyText(monthlyNet,
-                            currency: currency, style: Theme.of(context).textTheme.titleLarge),
+                            currency: currency, kind: AmountKind.net, style: Theme.of(context).textTheme.headline),
                       ),
                     ),
                   if (active.isNotEmpty) ...[
@@ -150,7 +152,15 @@ class _RuleTile extends ConsumerWidget {
       subtitle: Text('$schedule · ${account?.name ?? 'Account'}\n$when'),
       isThreeLine: true,
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-        MoneyText(rule.type == TxType.income ? rule.amount : -rule.amount, currency: currency),
+        MoneyText(
+          rule.amount,
+          currency: currency,
+          kind: switch (rule.type) {
+            TxType.income => AmountKind.income,
+            TxType.expense => AmountKind.expense,
+            TxType.transfer => AmountKind.plain,
+          },
+        ),
         const SizedBox(width: 4),
         Switch(
           value: rule.isActive,

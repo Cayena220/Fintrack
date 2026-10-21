@@ -34,9 +34,14 @@ void main() {
     });
 
     test('puts the sign in front of the symbol', () {
-      expect(formatMoney(-500, 'USD'), r'-$5.00');
+      expect(formatMoney(-500, 'USD'), '−\$5.00');
       expect(formatMoney(500, 'USD', signed: true), r'+$5.00');
       expect(formatMoney(0, 'USD', signed: true), r'$0.00');
+    });
+
+    test('uses a true minus sign, not a hyphen', () {
+      expect(formatMoney(-124000, 'PHP'), '−₱1,240.00');
+      expect(formatMoney(-124000, 'PHP'), isNot(contains('-')));
     });
   });
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/formatters.dart';
 import '../../core/theme.dart';
@@ -41,6 +42,7 @@ class TransactionTile extends ConsumerWidget {
     if (tx.note != null && tx.note!.isNotEmpty) subtitle = '$subtitle · ${tx.note}';
     if (showDate) subtitle = '${formatRelativeDay(tx.occurredOn)} · $subtitle';
 
+    final muted = FinColors.of(context).inkMuted;
     return ListTile(
       onTap: () => context.push('/transaction', extra: tx),
       leading: IconBadge(icon: icon, color: color),
@@ -48,28 +50,29 @@ class TransactionTile extends ConsumerWidget {
         Flexible(child: Text(title, overflow: TextOverflow.ellipsis)),
         if (tx.recurringRuleId != null)
           Padding(
-            padding: const EdgeInsets.only(left: 6),
-            child: Icon(Icons.repeat, size: 14, color: Theme.of(context).colorScheme.outline),
+            padding: const EdgeInsets.only(left: 4),
+            child: Icon(Symbols.repeat_rounded, size: 16, color: muted, semanticLabel: 'Recurring'),
           ),
         if (pending)
           Padding(
-            padding: const EdgeInsets.only(left: 6),
+            padding: const EdgeInsets.only(left: 4),
             child: Tooltip(
               message: 'Waiting to sync',
-              child: Icon(Icons.cloud_upload_outlined, size: 14, color: Theme.of(context).colorScheme.outline),
+              child: Icon(Symbols.cloud_upload_rounded, size: 16, color: muted, semanticLabel: 'Waiting to sync'),
             ),
           ),
       ]),
       subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
-      trailing: tx.type == TxType.transfer
-          ? Text(formatMoney(tx.amount, currency), style: const TextStyle(fontWeight: FontWeight.w600))
-          : Text(
-              formatMoney(tx.signedAmount, currency, signed: true),
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: tx.type == TxType.income ? MoneyColors.income(context) : MoneyColors.expense(context),
-              ),
-            ),
+      // Income green with +, expense ink with −, transfers unsigned.
+      trailing: MoneyText(
+        tx.amount,
+        currency: currency,
+        kind: switch (tx.type) {
+          TxType.income => AmountKind.income,
+          TxType.expense => AmountKind.expense,
+          TxType.transfer => AmountKind.plain,
+        },
+      ),
     );
   }
 }

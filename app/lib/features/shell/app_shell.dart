@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
+import '../../core/theme.dart';
 import '../../core/widgets/common.dart';
 import '../../data/providers.dart';
 import '../../data/sync.dart';
@@ -9,12 +12,13 @@ import '../../services/notification_service.dart';
 import '../../services/update_service.dart';
 import '../budgets/budget_alerts.dart';
 
+// The active item shows the same glyph filled.
 const _destinations = [
-  (icon: Icons.space_dashboard_outlined, selected: Icons.space_dashboard, label: 'Home'),
-  (icon: Icons.receipt_long_outlined, selected: Icons.receipt_long, label: 'Transactions'),
-  (icon: Icons.pie_chart_outline, selected: Icons.pie_chart, label: 'Budgets'),
-  (icon: Icons.insights_outlined, selected: Icons.insights, label: 'Reports'),
-  (icon: Icons.menu, selected: Icons.menu_open, label: 'More'),
+  (icon: Symbols.space_dashboard_rounded, label: 'Home'),
+  (icon: Symbols.receipt_long_rounded, label: 'Transactions'),
+  (icon: Symbols.pie_chart_rounded, label: 'Budgets'),
+  (icon: Symbols.insights_rounded, label: 'Reports'),
+  (icon: Symbols.menu_rounded, label: 'More'),
 ];
 
 /// Bottom navigation on phones, a navigation rail on wide windows.
@@ -87,13 +91,16 @@ class _AppShellState extends ConsumerState<AppShell> {
     if (!wide) {
       return Scaffold(
         body: body,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: index,
-          onDestinationSelected: _go,
-          destinations: [
-            for (final d in _destinations)
-              NavigationDestination(icon: Icon(d.icon), selectedIcon: Icon(d.selected), label: d.label),
-          ],
+        bottomNavigationBar: DecoratedBox(
+          decoration: BoxDecoration(border: Border(top: BorderSide(color: FinColors.of(context).line))),
+          child: NavigationBar(
+            selectedIndex: index,
+            onDestinationSelected: _go,
+            destinations: [
+              for (final d in _destinations)
+                NavigationDestination(icon: Icon(d.icon), selectedIcon: Icon(d.icon, fill: 1), label: d.label),
+            ],
+          ),
         ),
       );
     }
@@ -109,14 +116,13 @@ class _AppShellState extends ConsumerState<AppShell> {
             child: FloatingActionButton(
               heroTag: 'rail-add',
               tooltip: 'New transaction',
-              elevation: 0,
               onPressed: () => context.push('/transaction'),
-              child: const Icon(Icons.add),
+              child: const Icon(Symbols.add_rounded),
             ),
           ),
           destinations: [
             for (final d in _destinations)
-              NavigationRailDestination(icon: Icon(d.icon), selectedIcon: Icon(d.selected), label: Text(d.label)),
+              NavigationRailDestination(icon: Icon(d.icon), selectedIcon: Icon(d.icon, fill: 1), label: Text(d.label)),
           ],
         ),
         const VerticalDivider(width: 1),
@@ -126,7 +132,8 @@ class _AppShellState extends ConsumerState<AppShell> {
   }
 }
 
-/// Thin strip at the top while offline or while changes wait to upload.
+/// Thin strip at the top while offline or while changes wait to upload. On
+/// deep water: noticeable, not alarming, because being offline is normal.
 class _SyncBanner extends StatelessWidget {
   const _SyncBanner({required this.status, required this.onRetry});
 
@@ -135,32 +142,47 @@ class _SyncBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colors = FinColors.of(context);
     final changes = '${status.pending} ${status.pending == 1 ? 'change' : 'changes'}';
     final text = status.online
         ? '$changes waiting to sync'
         : status.pending == 0
             ? "You're offline. Showing saved data."
             : "You're offline. $changes will sync when you reconnect.";
-    return Material(
-      color: scheme.secondaryContainer,
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 6, 8, 6),
-          child: Row(children: [
-            Icon(status.online ? Icons.cloud_upload_outlined : Icons.cloud_off_outlined,
-                size: 18, color: scheme.onSecondaryContainer),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(text,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSecondaryContainer)),
+    // Light status-bar icons over the deep strip.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Material(
+        color: colors.deep,
+        child: SafeArea(
+          bottom: false,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 44),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 8, 4),
+              child: Row(children: [
+                Icon(status.online ? Symbols.cloud_upload_rounded : Symbols.cloud_off_rounded,
+                    size: 18, color: colors.foam),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(text, style: Theme.of(context).textTheme.caption.copyWith(color: colors.onDeep)),
+                ),
+                if (status.online && status.pending > 0)
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: colors.foam,
+                      backgroundColor: Colors.transparent,
+                      minimumSize: const Size(48, 36),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(FinRadius.sm)),
+                    ),
+                    onPressed: onRetry,
+                    child: const Text('Sync now'),
+                  )
+                else
+                  const SizedBox(height: 36),
+              ]),
             ),
-            if (status.online && status.pending > 0)
-              TextButton(onPressed: onRetry, child: const Text('Sync now'))
-            else
-              const SizedBox(height: 36),
-          ]),
+          ),
         ),
       ),
     );

@@ -30,7 +30,8 @@ String formatMoney(int cents, String currency, {bool signed = false, bool compac
         : NumberFormat.currency(name: currency, symbol: symbol, decimalDigits: 2);
   });
   final text = format.format(cents.abs() / 100);
-  if (cents < 0) return '-$text';
+  // A true minus sign, never a hyphen.
+  if (cents < 0) return '−$text';
   if (signed && cents > 0) return '+$text';
   return text;
 }

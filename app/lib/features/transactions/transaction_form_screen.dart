@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/formatters.dart';
+import '../../core/theme.dart';
 import '../../core/widgets/common.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
@@ -122,7 +124,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
       appBar: AppBar(
         title: Text(_isEdit ? 'Edit transaction' : 'New transaction'),
         actions: [
-          if (_isEdit) IconButton(tooltip: 'Delete', icon: const Icon(Icons.delete_outline), onPressed: _delete),
+          if (_isEdit) IconButton(tooltip: 'Delete', icon: const Icon(Symbols.delete_rounded), onPressed: _delete),
         ],
       ),
       body: AsyncView(
@@ -131,7 +133,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
           final active = accountList.where((a) => !a.isArchived || a.id == _accountId || a.id == _toAccountId).toList();
           if (active.isEmpty) {
             return EmptyState(
-              icon: Icons.account_balance_wallet_outlined,
+              icon: Symbols.account_balance_wallet_rounded,
               title: 'Add an account first',
               action: FilledButton(onPressed: () => context.push('/account'), child: const Text('Add account')),
             );
@@ -156,9 +158,9 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                         padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8)),
                       ),
                       segments: const [
-                        ButtonSegment(value: TxType.expense, label: _SegmentLabel('Expense'), icon: Icon(Icons.north_east)),
-                        ButtonSegment(value: TxType.income, label: _SegmentLabel('Income'), icon: Icon(Icons.south_west)),
-                        ButtonSegment(value: TxType.transfer, label: _SegmentLabel('Transfer'), icon: Icon(Icons.swap_horiz)),
+                        ButtonSegment(value: TxType.expense, label: _SegmentLabel('Expense'), icon: Icon(Symbols.north_east_rounded)),
+                        ButtonSegment(value: TxType.income, label: _SegmentLabel('Income'), icon: Icon(Symbols.south_west_rounded)),
+                        ButtonSegment(value: TxType.transfer, label: _SegmentLabel('Transfer'), icon: Icon(Symbols.swap_horiz_rounded)),
                       ],
                       selected: {_type},
                       onSelectionChanged: (s) => setState(() {
@@ -172,10 +174,13 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                       autofocus: !_isEdit,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-                      style: Theme.of(context).textTheme.headlineMedium,
+                      // The amount field: display face, tabular figures, the symbol as a muted prefix.
+                      style: Theme.of(context).textTheme.headline.tabular,
                       decoration: InputDecoration(
                         labelText: 'Amount',
                         prefixText: '${currencySymbol(currency)} ',
+                        prefixStyle: Theme.of(context).textTheme.headline.copyWith(color: FinColors.of(context).inkMuted),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 17),
                       ),
                       validator: (v) {
                         final cents = parseAmountInput(v ?? '');
@@ -186,6 +191,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
+                      icon: dropdownIcon,
                       initialValue: _accountId,
                       decoration: InputDecoration(labelText: _type == TxType.transfer ? 'From account' : 'Account'),
                       items: [for (final a in active) DropdownMenuItem(value: a.id, child: Text(a.name))],
@@ -194,6 +200,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                     if (_type == TxType.transfer) ...[
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
+                        icon: dropdownIcon,
                         initialValue: _toAccountId,
                         decoration: const InputDecoration(labelText: 'To account'),
                         items: [
@@ -207,19 +214,19 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                       ),
                     ] else ...[
                       const SizedBox(height: 20),
-                      Text('Category', style: Theme.of(context).textTheme.titleSmall),
+                      Text('Category', style: Theme.of(context).textTheme.label),
                       const SizedBox(height: 8),
                       Wrap(spacing: 8, runSpacing: 8, children: [
                         for (final c in kindCategories)
                           ChoiceChip(
-                            avatar: IconBadge(icon: c.icon, color: c.color, size: 24),
+                            avatar: IconBadge(icon: c.icon, color: c.color, size: 24, round: true),
                             label: Text(c.name),
                             selected: _categoryId == c.id,
                             onSelected: (_) => setState(() => _categoryId = c.id),
                           ),
                         ActionChip(
-                          avatar: const Icon(Icons.add, size: 18),
-                          label: const Text('New'),
+                          avatar: const Icon(Symbols.add_rounded, size: 18),
+                          label: Text('New', style: TextStyle(color: FinColors.of(context).fin)),
                           onPressed: () => context.push('/categories'),
                         ),
                       ]),
@@ -227,10 +234,10 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                     const SizedBox(height: 20),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.event_outlined),
+                      leading: const Icon(Symbols.event_rounded),
                       title: const Text('Date'),
                       subtitle: Text(formatRelativeDay(_date)),
-                      trailing: const Icon(Icons.edit_calendar_outlined),
+                      trailing: const Icon(Symbols.edit_calendar_rounded),
                       onTap: _pickDate,
                     ),
                     const SizedBox(height: 8),
@@ -240,7 +247,7 @@ class _TransactionFormScreenState extends ConsumerState<TransactionFormScreen> {
                       maxLines: 2,
                       minLines: 1,
                       textCapitalization: TextCapitalization.sentences,
-                      decoration: const InputDecoration(labelText: 'Note (optional)', prefixIcon: Icon(Icons.notes)),
+                      decoration: const InputDecoration(labelText: 'Note (optional)', prefixIcon: Icon(Symbols.notes_rounded)),
                     ),
                     const SizedBox(height: 16),
                     FilledButton(

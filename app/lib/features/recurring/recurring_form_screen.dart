@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/formatters.dart';
+import '../../core/theme.dart';
 import '../../core/widgets/common.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
@@ -178,7 +180,7 @@ class _RecurringFormScreenState extends ConsumerState<RecurringFormScreen> {
       appBar: AppBar(
         title: Text(_isEdit ? 'Edit recurring item' : 'New recurring item'),
         actions: [
-          if (_isEdit) IconButton(tooltip: 'Delete', icon: const Icon(Icons.delete_outline), onPressed: _delete),
+          if (_isEdit) IconButton(tooltip: 'Delete', icon: const Icon(Symbols.delete_rounded), onPressed: _delete),
         ],
       ),
       body: AsyncView(
@@ -187,7 +189,7 @@ class _RecurringFormScreenState extends ConsumerState<RecurringFormScreen> {
           final active = accountList.where((a) => !a.isArchived || a.id == _accountId).toList();
           if (active.isEmpty) {
             return EmptyState(
-              icon: Icons.account_balance_wallet_outlined,
+              icon: Symbols.account_balance_wallet_rounded,
               title: 'Add an account first',
               action: FilledButton(onPressed: () => context.push('/account'), child: const Text('Add account')),
             );
@@ -215,8 +217,8 @@ class _RecurringFormScreenState extends ConsumerState<RecurringFormScreen> {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                   SegmentedButton<TxType>(
                     segments: const [
-                      ButtonSegment(value: TxType.expense, label: Text('Expense'), icon: Icon(Icons.north_east)),
-                      ButtonSegment(value: TxType.income, label: Text('Income'), icon: Icon(Icons.south_west)),
+                      ButtonSegment(value: TxType.expense, label: Text('Expense'), icon: Icon(Symbols.north_east_rounded)),
+                      ButtonSegment(value: TxType.income, label: Text('Income'), icon: Icon(Symbols.south_west_rounded)),
                     ],
                     selected: {_type},
                     onSelectionChanged: (s) => setState(() {
@@ -230,8 +232,13 @@ class _RecurringFormScreenState extends ConsumerState<RecurringFormScreen> {
                     autofocus: !_isEdit,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-                    style: theme.textTheme.headlineMedium,
-                    decoration: InputDecoration(labelText: 'Amount', prefixText: '${currencySymbol(currency)} '),
+                    style: theme.textTheme.headline.tabular,
+                    decoration: InputDecoration(
+                      labelText: 'Amount',
+                      prefixText: '${currencySymbol(currency)} ',
+                      prefixStyle: theme.textTheme.headline.copyWith(color: FinColors.of(context).inkMuted),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 17),
+                    ),
                     validator: (v) {
                       final cents = parseAmountInput(v ?? '');
                       if (cents == null || cents <= 0) return 'Enter an amount greater than zero';
@@ -247,23 +254,24 @@ class _RecurringFormScreenState extends ConsumerState<RecurringFormScreen> {
                     decoration: const InputDecoration(
                       labelText: 'Name (optional)',
                       hintText: 'e.g. Netflix, Rent, Salary',
-                      prefixIcon: Icon(Icons.notes),
+                      prefixIcon: Icon(Symbols.notes_rounded),
                     ),
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
+                    icon: dropdownIcon,
                     initialValue: _accountId,
                     decoration: const InputDecoration(labelText: 'Account'),
                     items: [for (final a in active) DropdownMenuItem(value: a.id, child: Text(a.name))],
                     onChanged: (v) => setState(() => _accountId = v),
                   ),
                   const SizedBox(height: 20),
-                  Text('Category', style: theme.textTheme.titleSmall),
+                  Text('Category', style: theme.textTheme.label),
                   const SizedBox(height: 8),
                   Wrap(spacing: 8, runSpacing: 8, children: [
                     for (final c in kindCategories)
                       ChoiceChip(
-                        avatar: IconBadge(icon: c.icon, color: c.color, size: 24),
+                        avatar: IconBadge(icon: c.icon, color: c.color, size: 24, round: true),
                         label: Text(c.name),
                         selected: _categoryId == c.id,
                         onSelected: (_) => setState(() => _categoryId = c.id),
@@ -290,6 +298,7 @@ class _RecurringFormScreenState extends ConsumerState<RecurringFormScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: DropdownButtonFormField<Frequency>(
+                        icon: dropdownIcon,
                         initialValue: _frequency,
                         decoration: const InputDecoration(labelText: 'Period'),
                         items: [
@@ -303,22 +312,22 @@ class _RecurringFormScreenState extends ConsumerState<RecurringFormScreen> {
                   const SizedBox(height: 8),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.event_outlined),
+                    leading: const Icon(Symbols.event_rounded),
                     title: const Text('Starts'),
                     subtitle: Text(formatRelativeDay(_startDate)),
-                    trailing: const Icon(Icons.edit_calendar_outlined),
+                    trailing: const Icon(Symbols.edit_calendar_rounded),
                     onTap: _pickStart,
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.event_busy_outlined),
+                    leading: const Icon(Symbols.event_busy_rounded),
                     title: const Text('Ends'),
                     subtitle: Text(_endDate == null ? 'Never' : formatDate(_endDate!)),
                     trailing: _endDate == null
-                        ? const Icon(Icons.edit_calendar_outlined)
+                        ? const Icon(Symbols.edit_calendar_rounded)
                         : IconButton(
                             tooltip: 'Remove end date',
-                            icon: const Icon(Icons.clear),
+                            icon: const Icon(Symbols.clear_rounded),
                             onPressed: () => setState(() => _endDate = null),
                           ),
                     onTap: _pickEnd,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/formatters.dart';
 import '../../core/theme.dart';
@@ -19,7 +20,7 @@ class GoalsScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'add-goal',
         onPressed: () => showGoalDialog(context, ref),
-        icon: const Icon(Icons.add),
+        icon: const Icon(Symbols.add_rounded),
         label: const Text('New goal'),
       ),
       body: AsyncView(
@@ -28,7 +29,7 @@ class GoalsScreen extends ConsumerWidget {
         builder: (goals) {
           if (goals.isEmpty) {
             return EmptyState(
-              icon: Icons.savings_outlined,
+              icon: Symbols.savings_rounded,
               title: 'No savings goals yet',
               message: 'Set a target, like an emergency fund or a new laptop, and track what you put aside.',
               action: FilledButton(onPressed: () => showGoalDialog(context, ref), child: const Text('Create a goal')),
@@ -50,14 +51,13 @@ class GoalsScreen extends ConsumerWidget {
                       child: ListTile(
                         title: const Text('Saved across active goals'),
                         subtitle: Text('of ${formatMoney(target, currency)} total'),
-                        trailing: Text(formatMoney(saved, currency),
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+                        trailing: MoneyText(saved, currency: currency, style: Theme.of(context).textTheme.headline),
                       ),
                     ),
-                  for (final g in active) ...[const SizedBox(height: 10), _GoalCard(goal: g)],
+                  for (final g in active) ...[const SizedBox(height: 8), _GoalCard(goal: g)],
                   if (completed.isNotEmpty) ...[
                     const SectionHeader('Completed'),
-                    for (final g in completed) ...[_GoalCard(goal: g), const SizedBox(height: 10)],
+                    for (final g in completed) ...[_GoalCard(goal: g), const SizedBox(height: 8)],
                   ],
                 ]),
               ),
@@ -89,7 +89,8 @@ class _GoalCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currency = ref.watch(currencyProvider);
-    final theme = Theme.of(context);
+    final colors = FinColors.of(context);
+    final text = Theme.of(context).textTheme;
     final perMonth = monthlySavingNeeded(goal);
     final overdue = !goal.isCompleted &&
         goal.remaining > 0 &&
@@ -107,34 +108,39 @@ class _GoalCard extends ConsumerWidget {
       detail = '${formatMoney(goal.remaining, currency)} to go';
     }
 
+    // Overdue is a warning, never expense red: nothing is lost.
+    final detailColor = overdue ? colors.warning : colors.inkMuted;
+
     return Card(
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(FinRadius.lg),
         onTap: () => showGoalDetails(context, goal.id!),
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(children: [
               IconBadge(icon: goal.icon, color: goal.color, size: 40),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(goal.name, style: theme.textTheme.titleSmall),
-                  Text(
-                    detail,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: overdue ? MoneyColors.warning(context) : theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+                  Text(goal.name, style: text.title, overflow: TextOverflow.ellipsis),
+                  Row(children: [
+                    if (overdue)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Icon(Symbols.schedule_rounded, size: 16, color: detailColor),
+                      ),
+                    Flexible(child: Text(detail, style: text.caption.tabular.copyWith(color: detailColor))),
+                  ]),
                 ]),
               ),
-              Text('${(goal.progress * 100).round()}%', style: theme.textTheme.labelLarge),
+              Text('${(goal.progress * 100).round()}%', style: text.label.tabular),
             ]),
             const SizedBox(height: 10),
             GoalProgressBar(goal: goal),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text('${formatMoney(goal.savedAmount, currency)} of ${formatMoney(goal.targetAmount, currency)}',
-                style: theme.textTheme.bodySmall),
+                style: text.caption.tabular.copyWith(color: colors.inkMuted)),
           ]),
         ),
       ),
@@ -147,19 +153,13 @@ class GoalProgressBar extends StatelessWidget {
 
   final SavingsGoal goal;
 
+  /// The goal's own color, darkened like IconBadge's glyph so it clears 3:1 on the track.
   @override
   Widget build(BuildContext context) {
-    final color = Color(goal.color);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
-      child: LinearProgressIndicator(
-        value: goal.progress,
-        minHeight: 10,
-        color: color,
-        backgroundColor: color.withValues(alpha: 0.15),
-        semanticsLabel: '${goal.name} progress',
-        semanticsValue: '${(goal.progress * 100).round()}%',
-      ),
+    return ProgressBar(
+      ratio: goal.progress,
+      color: FinColors.of(context).categoryInk(Color(goal.color)),
+      label: '${goal.name} progress',
     );
   }
 }
@@ -237,13 +237,12 @@ class _GoalDetailsSheet extends ConsumerWidget {
             Expanded(child: Text(goal.name, style: theme.textTheme.titleLarge)),
             IconButton(
               tooltip: 'Edit goal',
-              icon: const Icon(Icons.edit_outlined),
+              icon: const Icon(Symbols.edit_rounded),
               onPressed: () => showGoalDialog(context, ref, existing: goal),
             ),
           ]),
           const SizedBox(height: 16),
-          Text(formatMoney(goal.savedAmount, currency),
-              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+          MoneyText(goal.savedAmount, currency: currency, style: theme.textTheme.headline),
           Text('saved of ${formatMoney(goal.targetAmount, currency)}'
               '${goal.targetDate == null ? '' : ' · target ${formatDate(goal.targetDate!)}'}'),
           const SizedBox(height: 12),
@@ -253,7 +252,7 @@ class _GoalDetailsSheet extends ConsumerWidget {
             Expanded(
               child: FilledButton.icon(
                 onPressed: () => showContributionDialog(context, ref, goal: goal),
-                icon: const Icon(Icons.add),
+                icon: const Icon(Symbols.add_rounded),
                 label: const Text('Add money'),
               ),
             ),
@@ -264,7 +263,7 @@ class _GoalDetailsSheet extends ConsumerWidget {
                 onPressed: goal.savedAmount > 0
                     ? () => showContributionDialog(context, ref, goal: goal, withdraw: true)
                     : null,
-                icon: const Icon(Icons.remove),
+                icon: const Icon(Symbols.remove_rounded),
                 label: const Text('Withdraw'),
               ),
             ),
@@ -291,10 +290,11 @@ class _GoalDetailsSheet extends ConsumerWidget {
                 for (final c in list)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: Icon(c.amount >= 0 ? Icons.south_west : Icons.north_east),
+                    leading: Icon(c.amount >= 0 ? Symbols.south_west_rounded : Symbols.north_east_rounded),
                     title: Text(c.note ?? (c.amount >= 0 ? 'Added' : 'Withdrawn')),
                     subtitle: Text(formatRelativeDay(c.contributedOn)),
-                    trailing: MoneyText(c.amount, currency: currency),
+                    trailing: MoneyText(c.amount,
+                        currency: currency, kind: c.amount >= 0 ? AmountKind.income : AmountKind.expense),
                     onLongPress: () => _deleteContribution(context, ref, c),
                   ),
                 Padding(
@@ -356,14 +356,14 @@ Future<void> showGoalDialog(BuildContext context, WidgetRef ref, {SavingsGoal? e
                 const SizedBox(height: 8),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.event_outlined),
+                  leading: const Icon(Symbols.event_rounded),
                   title: const Text('Target date (optional)'),
                   subtitle: Text(targetDate == null ? 'No deadline' : formatDate(targetDate!)),
                   trailing: targetDate == null
-                      ? const Icon(Icons.edit_calendar_outlined)
+                      ? const Icon(Symbols.edit_calendar_rounded)
                       : IconButton(
                           tooltip: 'Clear date',
-                          icon: const Icon(Icons.clear),
+                          icon: const Icon(Symbols.clear_rounded),
                           onPressed: () => setState(() => targetDate = null),
                         ),
                   onTap: () async {
@@ -481,7 +481,7 @@ Future<void> showContributionDialog(BuildContext context, WidgetRef ref,
               const SizedBox(height: 8),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.event_outlined),
+                leading: const Icon(Symbols.event_rounded),
                 title: const Text('Date'),
                 subtitle: Text(formatRelativeDay(date)),
                 onTap: () async {

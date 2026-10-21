@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/widgets/common.dart';
 import '../../data/providers.dart';
 
 const _items = [
-  (icon: Icons.account_balance_wallet_outlined, title: 'Accounts', subtitle: 'Cash, banks, e-wallets, cards', path: '/accounts'),
-  (icon: Icons.savings_outlined, title: 'Savings goals', subtitle: 'Targets and contributions', path: '/goals'),
-  (icon: Icons.event_repeat_outlined, title: 'Recurring', subtitle: 'Bills, subscriptions and salary', path: '/recurring'),
-  (icon: Icons.category_outlined, title: 'Categories', subtitle: 'Add or archive categories', path: '/categories'),
-  (icon: Icons.settings_outlined, title: 'Settings', subtitle: 'Profile, currency, theme, sign out', path: '/settings'),
+  (icon: Symbols.account_balance_wallet_rounded, title: 'Accounts', subtitle: 'Cash, banks, e-wallets, cards', path: '/accounts'),
+  (icon: Symbols.savings_rounded, title: 'Savings goals', subtitle: 'Targets and contributions', path: '/goals'),
+  (icon: Symbols.event_repeat_rounded, title: 'Recurring', subtitle: 'Bills, subscriptions and salary', path: '/recurring'),
+  (icon: Symbols.category_rounded, title: 'Categories', subtitle: 'Add or archive categories', path: '/categories'),
+  (icon: Symbols.settings_rounded, title: 'Settings', subtitle: 'Profile, currency, theme, sign out', path: '/settings'),
 ];
 
 class MoreScreen extends ConsumerWidget {
@@ -51,7 +52,7 @@ class MoreScreen extends ConsumerWidget {
                       leading: Icon(item.icon),
                       title: Text(item.title),
                       subtitle: Text(item.subtitle),
-                      trailing: const Icon(Icons.chevron_right),
+                      trailing: const Icon(Symbols.chevron_right_rounded),
                       onTap: () => context.push(item.path),
                     ),
                 ]),
