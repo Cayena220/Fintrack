@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../data/offline_store.dart';
 import '../formatters.dart';
 import '../icons.dart';
 import '../theme.dart';
+
+/// Dropdowns take their arrow from the app's icon set, not Material Icons.
+const dropdownIcon = Icon(Symbols.expand_more_rounded);
 
 /// Turns exceptions into short, human messages.
 String friendlyError(Object error) {
@@ -86,12 +90,15 @@ class AsyncView<T> extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.cloud_off_outlined, size: 40, color: Theme.of(context).colorScheme.error),
+            const _StateIcon(Symbols.cloud_off_rounded, error: true),
             const SizedBox(height: 12),
-            Text(friendlyError(value.error!), textAlign: TextAlign.center),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 320),
+              child: Text(friendlyError(value.error!), textAlign: TextAlign.center),
+            ),
             if (onRetry != null) ...[
               const SizedBox(height: 12),
-              OutlinedButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: const Text('Retry')),
+              OutlinedButton.icon(onPressed: onRetry, icon: const Icon(Symbols.refresh_rounded), label: const Text('Retry')),
             ],
           ]),
         ),
@@ -111,19 +118,21 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final text = Theme.of(context).textTheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, size: 48, color: theme.colorScheme.outline),
+          _StateIcon(icon),
           const SizedBox(height: 12),
-          Text(title, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
+          Text(title, style: text.title, textAlign: TextAlign.center),
           if (message != null) ...[
             const SizedBox(height: 6),
-            Text(message!,
-                style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                textAlign: TextAlign.center),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 320),
+              child: Text(message!,
+                  style: text.body.copyWith(color: FinColors.of(context).inkMuted), textAlign: TextAlign.center),
+            ),
           ],
           if (action != null) ...[const SizedBox(height: 16), action!],
         ]),
@@ -132,44 +141,133 @@ class EmptyState extends StatelessWidget {
   }
 }
 
-/// Round tinted icon used for categories, accounts and goals.
-class IconBadge extends StatelessWidget {
-  const IconBadge({super.key, required this.icon, required this.color, this.size = 40});
+/// The 64px tile behind an empty or failed-load state's icon.
+class _StateIcon extends StatelessWidget {
+  const _StateIcon(this.icon, {this.error = false});
 
-  final String icon;
-  final int color;
-  final double size;
+  final IconData icon;
+  final bool error;
 
   @override
   Widget build(BuildContext context) {
-    final c = Color(color);
+    final colors = FinColors.of(context);
     return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: c.withValues(alpha: 0.15), shape: BoxShape.circle),
-      child: Icon(iconFor(icon), color: c, size: size * 0.55),
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(
+        color: error ? colors.expenseSoft : colors.surfaceSunken,
+        borderRadius: BorderRadius.circular(FinRadius.lg),
+      ),
+      child: Icon(icon, size: 30, color: error ? colors.expense : colors.inkMuted),
     );
   }
 }
 
-/// Amount colored by direction (green income, red expense).
+/// Tinted squircle that carries a category's, account's or goal's icon.
+/// The glyph is darkened toward ink (or white in dark mode) so light
+/// category colors still read. [round] is only for chips.
+class IconBadge extends StatelessWidget {
+  const IconBadge({super.key, required this.icon, required this.color, this.size = 40, this.round = false});
+
+  final String icon;
+  final int color;
+  final double size;
+  final bool round;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = FinColors.of(context);
+    final c = Color(color);
+    final radius = round ? size / 2 : (size >= 48 ? FinRadius.md : FinRadius.sm);
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(color: colors.categoryTint(c), borderRadius: BorderRadius.circular(radius)),
+      child: Icon(iconFor(icon), color: colors.categoryInk(c), size: (size * 0.55).roundToDouble()),
+    );
+  }
+}
+
+/// What an amount means, which decides its sign and color. Direction is
+/// shown by the sign first; red is for trouble, not for spending.
+enum AmountKind {
+  /// +₱32,000.00 in income green.
+  income,
+
+  /// −₱1,240.00 in ink.
+  expense,
+
+  /// No sign, ink: transfers, and totals whose label already says which way
+  /// the money went.
+  plain,
+
+  /// Ink, or expense red with a minus when negative.
+  balance,
+
+  /// Income green with a plus, or expense red with a minus.
+  net,
+}
+
+/// A money figure in tabular numerals, signed and colored by [kind].
 class MoneyText extends StatelessWidget {
-  const MoneyText(this.cents, {super.key, required this.currency, this.signed = true, this.style, this.neutral = false});
+  const MoneyText(this.cents,
+      {super.key, required this.currency, this.kind = AmountKind.balance, this.over = false, this.style});
 
   final int cents;
   final String currency;
-  final bool signed;
-  final bool neutral;
+  final AmountKind kind;
+
+  /// Paints an over-budget figure in expense red.
+  final bool over;
+
+  /// Defaults to body-strong.
   final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
-    final color = neutral || cents == 0
-        ? null
-        : (cents > 0 ? MoneyColors.income(context) : MoneyColors.expense(context));
+    final colors = FinColors.of(context);
+    final shown = switch (kind) {
+      AmountKind.income || AmountKind.plain => cents.abs(),
+      AmountKind.expense => -cents.abs(),
+      AmountKind.balance || AmountKind.net => cents,
+    };
+    final trouble = over || (shown < 0 && (kind == AmountKind.balance || kind == AmountKind.net));
+    final grew = shown > 0 && (kind == AmountKind.income || kind == AmountKind.net);
     return Text(
-      formatMoney(cents, currency, signed: signed),
-      style: (style ?? const TextStyle()).copyWith(color: color, fontWeight: FontWeight.w600),
+      formatMoney(shown, currency, signed: kind == AmountKind.income || kind == AmountKind.net),
+      style: (style ?? Theme.of(context).textTheme.bodyStrong)
+          .tabular
+          .copyWith(color: trouble ? colors.expense : (grew ? colors.income : colors.ink)),
+    );
+  }
+}
+
+/// An 8px pill on a sunken track, for budgets and goals. It never shows a
+/// level on its own: the card beside it says it in words and with an icon.
+class ProgressBar extends StatelessWidget {
+  const ProgressBar({super.key, required this.ratio, required this.color, required this.label, this.height = 8});
+
+  final double ratio;
+  final Color color;
+  final String label;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(height / 2);
+    return Semantics(
+      label: label,
+      value: '${(ratio * 100).round()}%',
+      child: Container(
+        height: height,
+        alignment: AlignmentDirectional.centerStart,
+        decoration: BoxDecoration(color: FinColors.of(context).surfaceSunken, borderRadius: radius),
+        child: FractionallySizedBox(
+          widthFactor: ratio.clamp(0.0, 1.0),
+          heightFactor: 1,
+          child: DecoratedBox(decoration: BoxDecoration(color: color, borderRadius: radius)),
+        ),
+      ),
     );
   }
 }
@@ -183,19 +281,25 @@ class MonthSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isCurrent = monthStart(DateTime.now()) == monthStart(month);
+    final text = Theme.of(context).textTheme;
     return Row(mainAxisSize: MainAxisSize.min, children: [
       IconButton(
         tooltip: 'Previous month',
-        icon: const Icon(Icons.chevron_left),
+        icon: const Icon(Symbols.chevron_left_rounded),
         onPressed: () => onChanged(addMonths(month, -1)),
       ),
       TextButton(
+        style: TextButton.styleFrom(minimumSize: const Size(150, 40)),
         onPressed: isCurrent ? null : () => onChanged(monthStart(DateTime.now())),
-        child: Text(formatMonth(month), style: Theme.of(context).textTheme.titleMedium),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(formatMonth(month), style: text.title),
+          if (!isCurrent)
+            Text('Back to this month', style: text.caption.copyWith(color: FinColors.of(context).fin)),
+        ]),
       ),
       IconButton(
         tooltip: 'Next month',
-        icon: const Icon(Icons.chevron_right),
+        icon: const Icon(Symbols.chevron_right_rounded),
         onPressed: () => onChanged(addMonths(month, 1)),
       ),
     ]);
@@ -210,6 +314,7 @@ class ColorPickerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = FinColors.of(context);
     return Wrap(spacing: 8, runSpacing: 8, children: [
       for (final c in appColors)
         InkWell(
@@ -221,8 +326,12 @@ class ColorPickerRow extends StatelessWidget {
             decoration: BoxDecoration(
               color: Color(c),
               shape: BoxShape.circle,
-              border: c == selected
-                  ? Border.all(color: Theme.of(context).colorScheme.onSurface, width: 3)
+              // A 2px surface gap inside a 2px ink ring: a shape cue that works for every swatch.
+              boxShadow: c == selected
+                  ? [
+                      BoxShadow(color: colors.ink, spreadRadius: 4),
+                      BoxShadow(color: colors.surface, spreadRadius: 2),
+                    ]
                   : null,
             ),
           ),
@@ -240,20 +349,24 @@ class IconPickerGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(spacing: 6, runSpacing: 6, children: [
+    final colors = FinColors.of(context);
+    final glyph = colors.categoryInk(Color(color));
+    return Wrap(spacing: 8, runSpacing: 8, children: [
       for (final entry in appIcons.entries)
         InkWell(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(FinRadius.sm),
           onTap: () => onChanged(entry.key),
           child: Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: entry.key == selected ? Color(color).withValues(alpha: 0.18) : null,
-              borderRadius: BorderRadius.circular(10),
-              border: entry.key == selected ? Border.all(color: Color(color), width: 2) : null,
-            ),
-            child: Icon(entry.value, color: entry.key == selected ? Color(color) : null, size: 22),
+            width: 44,
+            height: 44,
+            decoration: entry.key == selected
+                ? BoxDecoration(
+                    color: colors.categoryTint(Color(color)),
+                    borderRadius: BorderRadius.circular(FinRadius.sm),
+                    border: Border.all(color: glyph, width: 2),
+                  )
+                : null,
+            child: Icon(entry.value, color: entry.key == selected ? glyph : colors.inkMuted, size: 22),
           ),
         ),
     ]);
@@ -272,7 +385,7 @@ class SectionHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
       child: Row(children: [
-        Expanded(child: Text(title, style: Theme.of(context).textTheme.titleMedium)),
+        Expanded(child: Text(title, style: Theme.of(context).textTheme.title)),
         ?action,
       ]),
     );

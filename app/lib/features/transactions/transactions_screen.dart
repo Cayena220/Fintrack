@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/formatters.dart';
+import '../../core/theme.dart';
 import '../../core/widgets/common.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
@@ -59,6 +61,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             Text('Filter', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
             DropdownButtonFormField<String?>(
+              icon: dropdownIcon,
               initialValue: _accountId,
               decoration: const InputDecoration(labelText: 'Account'),
               items: [
@@ -69,6 +72,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String?>(
+              icon: dropdownIcon,
               initialValue: _categoryId,
               decoration: const InputDecoration(labelText: 'Category'),
               items: [
@@ -114,7 +118,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
           IconButton(
             tooltip: 'Filter',
             onPressed: _openFilters,
-            icon: Badge(isLabelVisible: hasExtraFilters, child: const Icon(Icons.filter_list)),
+            icon: Badge(isLabelVisible: hasExtraFilters, child: const Icon(Symbols.filter_list_rounded)),
           ),
         ],
       ),
@@ -123,7 +127,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
           : FloatingActionButton(
               tooltip: 'New transaction',
               onPressed: () => context.push('/transaction'),
-              child: const Icon(Icons.add),
+              child: const Icon(Symbols.add_rounded),
             ),
       body: ContentWidth(
         child: Column(children: [
@@ -134,13 +138,13 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search notes',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Symbols.search_rounded),
                 isDense: true,
                 suffixIcon: _search.isEmpty
                     ? null
                     : IconButton(
                         tooltip: 'Clear search',
-                        icon: const Icon(Icons.close),
+                        icon: const Icon(Symbols.close_rounded),
                         onPressed: () {
                           _searchController.clear();
                           setState(() => _search = '');
@@ -178,7 +182,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   if (list.isEmpty) {
                     return ListView(children: const [
                       EmptyState(
-                        icon: Icons.receipt_long_outlined,
+                        icon: Symbols.receipt_long_rounded,
                         title: 'Nothing here',
                         message: 'No transactions match this month and filter.',
                       ),
@@ -200,9 +204,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(14),
                           child: Row(children: [
-                            _Total(label: 'Income', child: MoneyText(income, currency: currency, signed: false)),
-                            _Total(label: 'Expenses', child: MoneyText(-expense, currency: currency, signed: false)),
-                            _Total(label: 'Net', child: MoneyText(income - expense, currency: currency)),
+                            _Total(label: 'Income', child: MoneyText(income, currency: currency, kind: AmountKind.income)),
+                            _Total(label: 'Expenses', child: MoneyText(expense, currency: currency, kind: AmountKind.plain)),
+                            _Total(label: 'Net', child: MoneyText(income - expense, currency: currency, kind: AmountKind.net)),
                           ]),
                         ),
                       ),
@@ -210,13 +214,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 16, 4, 6),
                           child: Text(formatRelativeDay(entry.key),
-                              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                  )),
+                              style: Theme.of(context).textTheme.label.copyWith(color: FinColors.of(context).inkMuted)),
                         ),
                         Card(
                           clipBehavior: Clip.antiAlias,
-                          child: Column(children: [
+                          child: Column(children: ListTile.divideTiles(context: context, tiles: [
                             for (final tx in entry.value)
                               Dismissible(
                                 key: ValueKey(tx.id),
@@ -229,11 +231,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                   color: Theme.of(context).colorScheme.errorContainer,
                                   alignment: Alignment.centerRight,
                                   padding: const EdgeInsets.only(right: 20),
-                                  child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.onErrorContainer),
+                                  child: Icon(Symbols.delete_rounded, color: Theme.of(context).colorScheme.onErrorContainer),
                                 ),
                                 child: TransactionTile(tx: tx),
                               ),
-                          ]),
+                          ]).toList()),
                         ),
                       ],
                     ],
@@ -259,7 +261,9 @@ class _Total extends StatelessWidget {
     // Equal-width columns, centered, with amounts shrinking to fit on narrow phones.
     return Expanded(
       child: Column(children: [
-        Text(label, textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelMedium),
+        Text(label,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.caption.copyWith(color: FinColors.of(context).inkMuted)),
         const SizedBox(height: 4),
         FittedBox(fit: BoxFit.scaleDown, child: child),
       ]),

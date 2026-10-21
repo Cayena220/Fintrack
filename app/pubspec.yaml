@@ -49,6 +49,7 @@ dependencies:
   shared_preferences: ^2.5.6
   win32_registry: ^3.0.3
   connectivity_plus: ^7.3.2
+  material_symbols_icons: ^4.2960.0
 
 dev_dependencies:
   flutter_test:
@@ -76,6 +77,27 @@ flutter:
 
   assets:
     - assets/logo.png
+    - assets/fonts/OFL-BricolageGrotesque.txt
+    - assets/fonts/OFL-InstrumentSans.txt
+
+  # Bundled (not fetched at runtime) so type looks right in offline mode.
+  # Static instances from Google Fonts, SIL Open Font License 1.1.
+  fonts:
+    - family: Instrument Sans
+      fonts:
+        - asset: assets/fonts/InstrumentSans-Regular.ttf
+        - asset: assets/fonts/InstrumentSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/InstrumentSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/InstrumentSans-Bold.ttf
+          weight: 700
+    - family: Bricolage Grotesque
+      fonts:
+        - asset: assets/fonts/BricolageGrotesque-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/BricolageGrotesque-ExtraBold.ttf
+          weight: 800
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/env.dart';
@@ -80,10 +81,10 @@ class _PasswordFieldState extends State<_PasswordField> {
       autofillHints: const [AutofillHints.password],
       decoration: InputDecoration(
         labelText: widget.label,
-        prefixIcon: const Icon(Icons.lock_outline),
+        prefixIcon: const Icon(Symbols.lock_rounded),
         suffixIcon: IconButton(
           tooltip: _obscure ? 'Show password' : 'Hide password',
-          icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+          icon: Icon(_obscure ? Symbols.visibility_rounded : Symbols.visibility_off_rounded),
           onPressed: () => setState(() => _obscure = !_obscure),
         ),
       ),
@@ -147,7 +148,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 keyboardType: TextInputType.emailAddress,
                 autofillHints: const [AutofillHints.email],
                 validator: _validateEmail,
-                decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.mail_outline)),
+                decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Symbols.mail_rounded)),
               ),
               const SizedBox(height: 12),
               _PasswordField(
@@ -234,7 +235,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         await showDialog<void>(
           context: context,
           builder: (context) => AlertDialog(
-            icon: const Icon(Icons.mark_email_read_outlined),
+            icon: const Icon(Symbols.mark_email_read_rounded),
             title: const Text('Check your email'),
             content: Text('We sent a confirmation link to ${_email.text.trim()}. '
                 'Open it on this device to finish creating your account.'),
@@ -266,7 +267,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 textCapitalization: TextCapitalization.words,
                 autofillHints: const [AutofillHints.name],
                 validator: (v) => (v == null || v.trim().isEmpty) ? 'Enter your name' : null,
-                decoration: const InputDecoration(labelText: 'Name', prefixIcon: Icon(Icons.person_outline)),
+                decoration: const InputDecoration(labelText: 'Name', prefixIcon: Icon(Symbols.person_rounded)),
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -274,7 +275,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 keyboardType: TextInputType.emailAddress,
                 autofillHints: const [AutofillHints.email],
                 validator: _validateEmail,
-                decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.mail_outline)),
+                decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Symbols.mail_rounded)),
               ),
               const SizedBox(height: 12),
               _PasswordField(controller: _password, validator: _validatePassword),
@@ -351,7 +352,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               keyboardType: TextInputType.emailAddress,
               validator: _validateEmail,
               onFieldSubmitted: (_) => _send(),
-              decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.mail_outline)),
+              decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Symbols.mail_rounded)),
             ),
           ),
           const SizedBox(height: 20),

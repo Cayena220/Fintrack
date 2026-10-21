@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../core/formatters.dart';
@@ -128,14 +129,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Card(
                   child: Column(children: [
                     ListTile(
-                      leading: const Icon(Icons.person_outline),
+                      leading: const Icon(Symbols.person_rounded),
                       title: const Text('Display name'),
                       subtitle: Text(p?.displayName?.isNotEmpty == true ? p!.displayName! : 'Not set'),
-                      trailing: const Icon(Icons.edit_outlined),
+                      trailing: const Icon(Symbols.edit_rounded),
                       onTap: () => _editName(p?.displayName),
                     ),
                     ListTile(
-                      leading: const Icon(Icons.alternate_email),
+                      leading: const Icon(Symbols.alternate_email_rounded),
                       title: const Text('Email'),
                       subtitle: Text(email ?? '—'),
                     ),
@@ -145,10 +146,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Card(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                     ListTile(
-                      leading: const Icon(Icons.payments_outlined),
+                      leading: const Icon(Symbols.payments_rounded),
                       title: const Text('Currency'),
                       subtitle: const Text('Changes how amounts are shown, not their values.'),
                       trailing: DropdownButton<String>(
+                        icon: dropdownIcon,
                         value: currency,
                         underline: const SizedBox.shrink(),
                         items: [
@@ -168,9 +170,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         SegmentedButton<ThemeMode>(
                           segments: const [
                             ButtonSegment(
-                                value: ThemeMode.system, label: Text('System'), icon: Icon(Icons.brightness_auto)),
-                            ButtonSegment(value: ThemeMode.light, label: Text('Light'), icon: Icon(Icons.light_mode)),
-                            ButtonSegment(value: ThemeMode.dark, label: Text('Dark'), icon: Icon(Icons.dark_mode)),
+                                value: ThemeMode.system, label: Text('System'), icon: Icon(Symbols.brightness_auto_rounded)),
+                            ButtonSegment(value: ThemeMode.light, label: Text('Light'), icon: Icon(Symbols.light_mode_rounded)),
+                            ButtonSegment(value: ThemeMode.dark, label: Text('Dark'), icon: Icon(Symbols.dark_mode_rounded)),
                           ],
                           selected: {themeMode},
                           onSelectionChanged: (s) => ref.read(themeModeProvider.notifier).set(s.first),
@@ -183,16 +185,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Card(
                   child: Column(children: [
                     ListTile(
-                      leading: const Icon(Icons.info_outline),
+                      leading: const Icon(Symbols.info_rounded),
                       title: const Text('Version'),
                       subtitle: Text(info == null ? '…' : '${info.version} (build ${info.buildNumber})'),
                     ),
                     ListTile(
-                      leading: const Icon(Icons.system_update_outlined),
+                      leading: const Icon(Symbols.system_update_rounded),
                       title: const Text('Check for updates'),
                       trailing: _checkingUpdate
                           ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.chevron_right),
+                          : const Icon(Symbols.chevron_right_rounded),
                       onTap: _checkingUpdate || currentPlatformName == null ? null : _checkForUpdate,
                     ),
                   ]),
@@ -201,7 +203,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(minimumSize: const Size(64, 48)),
                   onPressed: _signOut,
-                  icon: const Icon(Icons.logout),
+                  icon: const Icon(Symbols.logout_rounded),
                   label: const Text('Sign out'),
                 ),
               ]),

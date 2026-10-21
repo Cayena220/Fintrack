@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/widgets/common.dart';
 import '../../data/models.dart';
@@ -24,7 +25,7 @@ class CategoriesScreen extends ConsumerWidget {
               final kind = DefaultTabController.of(context).index == 0 ? TxType.expense : TxType.income;
               showCategoryDialog(context, ref, kind: kind);
             },
-            child: const Icon(Icons.add),
+            child: const Icon(Symbols.add_rounded),
           ),
         ),
         body: AsyncView(
@@ -48,7 +49,7 @@ class _CategoryList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (categories.isEmpty) {
-      return const EmptyState(icon: Icons.category_outlined, title: 'No categories yet');
+      return const EmptyState(icon: Symbols.category_rounded, title: 'No categories yet');
     }
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
@@ -62,7 +63,7 @@ class _CategoryList extends ConsumerWidget {
                   leading: IconBadge(icon: c.icon, color: c.color),
                   title: Text(c.name),
                   subtitle: c.isArchived ? const Text('Archived') : null,
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: const Icon(Symbols.chevron_right_rounded),
                   onTap: () => showCategoryDialog(context, ref, existing: c, kind: c.kind),
                 ),
             ]),

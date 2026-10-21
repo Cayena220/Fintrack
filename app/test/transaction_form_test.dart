@@ -63,12 +63,14 @@ void main() {
 
     expect(find.text('Enter an amount greater than zero'), findsNothing);
     await tester.ensureVisible(find.text('Add transaction'));
+    await tester.pump();
     await tester.tap(find.text('Add transaction'));
     await tester.pumpAndSettle();
     expect(find.text('Enter an amount greater than zero'), findsOneWidget);
 
     await tester.enterText(find.byType(TextFormField).first, '0');
     await tester.ensureVisible(find.text('Add transaction'));
+    await tester.pump();
     await tester.tap(find.text('Add transaction'));
     await tester.pumpAndSettle();
     expect(find.text('Enter an amount greater than zero'), findsOneWidget);
@@ -87,6 +89,7 @@ void main() {
     await tester.enterText(find.byType(TextFormField).first, '100');
     expect(find.text('Choose where the money goes'), findsNothing);
     await tester.ensureVisible(find.text('Add transaction'));
+    await tester.pump();
     await tester.tap(find.text('Add transaction'));
     await tester.pumpAndSettle();
     expect(find.text('Choose where the money goes'), findsOneWidget);

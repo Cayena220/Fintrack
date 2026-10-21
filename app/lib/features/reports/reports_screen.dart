@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/formatters.dart';
 import '../../core/theme.dart';
@@ -69,7 +70,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             onPressed: _exporting ? null : () => _export(range),
             icon: _exporting
                 ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.file_download_outlined),
+                : const Icon(Symbols.file_download_rounded),
           ),
         ],
       ),
@@ -101,15 +102,25 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                   ),
                   const SizedBox(height: 12),
                   Row(children: [
-                    Expanded(child: _StatCard(label: 'Income', cents: income, currency: currency, color: MoneyColors.income(context))),
-                    const SizedBox(width: 10),
-                    Expanded(child: _StatCard(label: 'Expenses', cents: expense, currency: currency, color: MoneyColors.expense(context))),
-                    const SizedBox(width: 10),
-                    Expanded(child: _StatCard(label: 'Saved', cents: income - expense, currency: currency)),
+                    Expanded(
+                      child: _StatCard(
+                          label: 'Income', icon: Symbols.south_west_rounded, cents: income, currency: currency, kind: AmountKind.income),
+                    ),
+                    const SizedBox(width: 8),
+                    // The label and arrow say these are expenses, so the figure stays ink.
+                    Expanded(
+                      child: _StatCard(
+                          label: 'Expenses', icon: Symbols.north_east_rounded, cents: expense, currency: currency, kind: AmountKind.plain),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _StatCard(
+                          label: 'Saved', icon: Symbols.balance_rounded, cents: income - expense, currency: currency, kind: AmountKind.net),
+                    ),
                   ]),
                   if (rows.isEmpty)
                     const EmptyState(
-                      icon: Icons.insights_outlined,
+                      icon: Symbols.insights_rounded,
                       title: 'No data for this period',
                       message: 'Charts appear once you record income and expenses.',
                     )
@@ -132,25 +143,38 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
 }
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({required this.label, required this.cents, required this.currency, this.color});
+  const _StatCard({
+    required this.label,
+    required this.icon,
+    required this.cents,
+    required this.currency,
+    required this.kind,
+  });
 
   final String label;
+  final IconData icon;
   final int cents;
   final String currency;
-  final Color? color;
+  final AmountKind kind;
 
   @override
   Widget build(BuildContext context) {
+    final muted = FinColors.of(context).inkMuted;
+    final text = Theme.of(context).textTheme;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label, style: Theme.of(context).textTheme.labelMedium),
+          Row(children: [
+            Icon(icon, size: 16, color: muted),
+            const SizedBox(width: 6),
+            Flexible(child: Text(label, style: text.caption.copyWith(color: muted), overflow: TextOverflow.ellipsis)),
+          ]),
           const SizedBox(height: 4),
           FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(formatMoney(cents, currency),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: color, fontWeight: FontWeight.w700)),
+            alignment: AlignmentDirectional.centerStart,
+            child: MoneyText(cents, currency: currency, kind: kind, style: text.headline),
           ),
         ]),
       ),
@@ -231,7 +255,7 @@ class _CategoryBreakdownState extends State<_CategoryBreakdown> {
                   formatMoney(
                       _touched != null && _touched! >= 0 && _touched! < items.length ? items[_touched!].total : sum,
                       widget.currency),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context).textTheme.title.tabular,
                 ),
               ]),
             ]),
@@ -245,13 +269,15 @@ class _CategoryBreakdownState extends State<_CategoryBreakdown> {
               title: Text(item.name),
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(3),
-                  child: LinearProgressIndicator(value: item.total / sum, minHeight: 5, color: Color(item.color)),
+                child: ProgressBar(
+                  ratio: item.total / sum,
+                  color: FinColors.of(context).categoryInk(Color(item.color)),
+                  label: '${item.name} share',
+                  height: 6,
                 ),
               ),
               trailing: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Text(formatMoney(item.total, widget.currency), style: const TextStyle(fontWeight: FontWeight.w600)),
+                MoneyText(item.total, currency: widget.currency, kind: AmountKind.plain),
                 Text('${(item.total * 100 / sum).toStringAsFixed(1)}%', style: Theme.of(context).textTheme.bodySmall),
               ]),
             ),
@@ -278,8 +304,9 @@ class _MonthlyBars extends StatelessWidget {
     int sumFor(DateTime m, TxType type) =>
         rows.where((r) => r.month == m && r.type == type).fold<int>(0, (s, r) => s + r.total);
 
-    final incomeColor = MoneyColors.income(context);
-    final expenseColor = MoneyColors.expense(context);
+    final colors = FinColors.of(context);
+    final incomeColor = colors.income;
+    final expenseColor = colors.expense;
     var maxY = 0.0;
     final groups = <BarChartGroupData>[];
     for (var i = 0; i < months.length; i++) {
@@ -306,14 +333,15 @@ class _MonthlyBars extends StatelessWidget {
               gridData: FlGridData(
                 drawVerticalLine: false,
                 getDrawingHorizontalLine: (_) =>
-                    FlLine(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5), strokeWidth: 1),
+                    FlLine(color: colors.line, strokeWidth: 1),
               ),
               borderData: FlBorderData(show: false),
               barTouchData: BarTouchData(
                 touchTooltipData: BarTouchTooltipData(
+                  getTooltipColor: (_) => colors.ink,
                   getTooltipItem: (group, groupIndex, rod, rodIndex) => BarTooltipItem(
                     '${rodIndex == 0 ? 'Income' : 'Expenses'}\n${formatMoney((rod.toY * 100).round(), currency)}',
-                    const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    Theme.of(context).textTheme.label.tabular.copyWith(color: colors.paper),
                   ),
                 ),
               ),

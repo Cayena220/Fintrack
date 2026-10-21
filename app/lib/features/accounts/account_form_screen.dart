@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/formatters.dart';
 import '../../core/widgets/common.dart';
@@ -95,7 +96,7 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
       appBar: AppBar(
         title: Text(_isEdit ? 'Edit account' : 'New account'),
         actions: [
-          if (_isEdit) IconButton(tooltip: 'Delete', icon: const Icon(Icons.delete_outline), onPressed: _delete),
+          if (_isEdit) IconButton(tooltip: 'Delete', icon: const Icon(Symbols.delete_rounded), onPressed: _delete),
         ],
       ),
       body: Form(
@@ -115,6 +116,7 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<AccountType>(
+                icon: dropdownIcon,
                 initialValue: _type,
                 decoration: const InputDecoration(labelText: 'Type'),
                 items: [for (final t in AccountType.values) DropdownMenuItem(value: t, child: Text(t.label))],

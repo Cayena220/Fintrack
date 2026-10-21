@@ -7,99 +7,268 @@
   <meta name="description" content="FinTrack is a free personal finance app for Android and Windows. Track income and expenses, set budgets, see reports and reach your savings goals." />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-  <meta name="theme-color" content="#059669" />
+  <meta name="theme-color" content="#f5f6f1" />
   <meta property="og:title" content="FinTrack — Track every peso, plan every goal" />
   <meta property="og:description" content="Free personal finance app for Android and Windows." />
   <meta property="og:image" content="assets/icon-512.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
+  <!-- Only the icons this page uses; icon_names must stay in alphabetical order. -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=balance,battery_full,bolt,directions_car,error,expand_more,insights,lock,north_east,pie_chart,receipt_long,repeat,restaurant,savings,shopping_cart,signal_cellular_alt,south_west,warning,wifi,work&display=block" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          fontFamily: {
+            sans: ['"Instrument Sans"', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'],
+            display: ['"Bricolage Grotesque"', '"Instrument Sans"', 'system-ui', 'sans-serif'],
+          },
           colors: {
-            brand: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' },
+            paper: 'var(--paper)',
+            surface: 'var(--surface)',
+            sunken: 'var(--surface-sunken)',
+            line: 'var(--line)',
+            'line-strong': 'var(--line-strong)',
+            ink: 'var(--ink)',
+            'ink-muted': 'var(--ink-muted)',
+            deep: 'var(--deep)',
+            'on-deep': 'var(--on-deep)',
+            'on-deep-muted': 'var(--on-deep-muted)',
+            foam: 'var(--foam)',
+            fin: 'var(--fin)',
+            'fin-soft': 'var(--fin-soft)',
+            expense: 'var(--expense)',
+            warning: 'var(--warning)',
+            // The release script at the bottom builds markup with these Tailwind names;
+            // point them at the design tokens so that markup matches the page.
+            brand: { 50: 'var(--fin-soft)', 500: 'var(--fin)', 700: 'var(--fin)' },
+            sky: { 50: 'var(--surface-sunken)', 700: 'var(--ink)' },
+            slate: { 200: 'var(--line)', 500: 'var(--ink-muted)', 600: 'var(--ink-muted)', 900: 'var(--ink)' },
           },
         },
       },
     };
   </script>
   <style>
+    /* FinTrack design tokens: Shallows (light). */
+    :root {
+      --paper: #f5f6f1;
+      --surface: #ffffff;
+      --surface-sunken: #eceee7;
+      --line: #dce0d6;
+      --line-strong: #7d8983;
+      --ink: #0d2420;
+      --ink-muted: #4a5b55;
+      --deep: #0c3b31;
+      --on-deep: #f1faf5;
+      --on-deep-muted: #a9d9c4;
+      --foam: #a7f3d0;
+      --line-on-deep: rgba(241, 250, 245, 0.18);
+      --fin: #087a58;
+      --fin-hover: #066548;
+      --on-fin: #ffffff;
+      --fin-soft: #dbf3e7;
+      --expense: #b3361f;
+      --warning: #8a5000;
+      --sun: #b8740c;
+      --shadow-float: 0 6px 20px rgba(13, 36, 32, 0.16), 0 1px 3px rgba(13, 36, 32, 0.12);
+      --shadow-lift: 0 1px 2px rgba(13, 36, 32, 0.08);
+      --font-display: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
+      --font-sans: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
     html { scroll-behavior: smooth; }
+    :focus-visible { outline: 2px solid var(--fin); outline-offset: 2px; border-radius: 4px; }
     details > summary { list-style: none; cursor: pointer; }
     details > summary::-webkit-details-marker { display: none; }
     details[open] .chev { transform: rotate(180deg); }
+
+    /* Type styles */
+    .t-balance { font-family: var(--font-display); font-size: 44px; line-height: 48px; font-weight: 800; letter-spacing: -0.025em; }
+    .t-display { font-family: var(--font-display); font-size: 36px; line-height: 40px; font-weight: 800; letter-spacing: -0.025em; }
+    .t-headline { font-family: var(--font-display); font-size: 24px; line-height: 30px; font-weight: 700; letter-spacing: -0.015em; }
+    .t-title { font-size: 17px; line-height: 24px; font-weight: 600; }
+    .t-body { font-size: 15px; line-height: 22px; font-weight: 400; }
+    .t-body-strong { font-size: 15px; line-height: 22px; font-weight: 600; }
+    .t-label { font-size: 14px; line-height: 20px; font-weight: 600; letter-spacing: 0.005em; }
+    .t-caption { font-size: 13px; line-height: 18px; font-weight: 400; }
+    .t-micro { font-size: 11px; line-height: 14px; font-weight: 600; letter-spacing: 0.02em; }
+    .ft-num { font-variant-numeric: tabular-nums; }
+
+    /* Icon: Material Symbols Rounded, outline by default */
+    .ft-icon { font-family: 'Material Symbols Rounded'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; direction: ltr; flex-shrink: 0; user-select: none; -webkit-font-smoothing: antialiased; font-feature-settings: 'liga'; font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24; }
+    .ft-icon.is-filled { font-variation-settings: 'FILL' 1, 'wght' 450, 'GRAD' 0, 'opsz' 24; }
+
+    .site-header { background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+
+    /* Card: flat surface with a hairline */
+    .ft-card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; }
+
+    /* Icon badge: the category color tints the squircle and darkens the glyph */
+    .ft-badge { --c: #9ca3af; display: inline-grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: color-mix(in srgb, var(--c) 16%, var(--surface)); color: color-mix(in srgb, var(--c) 60%, var(--ink)); }
+    .ft-badge .ft-icon { font-size: 22px; }
+    .ft-badge--lg { width: 48px; height: 48px; border-radius: 14px; }
+    .ft-badge--sm { width: 28px; height: 28px; border-radius: 8px; }
+    .ft-badge--sm .ft-icon { font-size: 16px; }
+
+    /* Buttons */
+    .ft-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 1px solid transparent; border-radius: 14px; font-size: 14px; line-height: 20px; font-weight: 600; letter-spacing: 0.005em; text-decoration: none; transition: background-color .12s, color .12s; }
+    .ft-btn svg { width: 20px; height: 20px; margin-left: -4px; flex-shrink: 0; }
+    .ft-btn--sm { min-height: 36px; padding: 0 12px; border-radius: 10px; }
+    .ft-btn--primary { background: var(--fin); color: var(--on-fin); }
+    .ft-btn--primary:hover { background: var(--fin-hover); }
+    .ft-btn--deep { background: var(--deep); color: var(--on-deep); }
+    .ft-btn--deep:hover { background: color-mix(in srgb, var(--deep) 88%, var(--on-deep)); }
+    /* Downloads: primary for this device, deep for the other platform. The
+       script below moves this device's hero button first and rings its card. */
+    #hero-buttons > .dl-link { background: var(--deep); color: var(--on-deep); }
+    #hero-buttons > .dl-link:hover { background: color-mix(in srgb, var(--deep) 88%, var(--on-deep)); }
+    #hero-buttons > .dl-link:first-child { background: var(--fin); color: var(--on-fin); }
+    #hero-buttons > .dl-link:first-child:hover { background: var(--fin-hover); }
+    [data-platform] .download { background: var(--deep); color: var(--on-deep); }
+    [data-platform].ring-2 .download { background: var(--fin); color: var(--on-fin); }
+    [data-platform].ring-2 .download:hover { background: var(--fin-hover); }
+    .download.opacity-50 { opacity: 0.45; }
+
+    /* Phone mockup */
+    .phone { border: 10px solid var(--ink); border-radius: 40px; background: var(--paper); padding: 14px; box-shadow: var(--shadow-float); }
+    .mock-card { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow-lift); }
+    .mock-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+    .mock-row + .mock-row { border-top: 1px solid var(--line); }
+    .ft-bar { height: 8px; border-radius: 999px; background: var(--surface-sunken); overflow: hidden; }
+    .ft-bar > span { display: block; height: 100%; border-radius: 999px; background: var(--fin); }
+    .ft-bar--warning > span { background: var(--sun); }
+
+    /* Balance card: solid deep water with the logo's foam wave */
+    .ft-balance { position: relative; overflow: hidden; padding: 16px; border-radius: 24px; background: var(--deep); color: var(--on-deep); }
+    .ft-balance > :not(.ft-balance__wave) { position: relative; }
+    .ft-balance__wave { position: absolute; right: -8px; top: 10px; width: 150px; height: 44px; pointer-events: none; }
+    .ft-balance__wave path { fill: none; stroke: var(--foam); stroke-linecap: round; }
+    .ft-balance__total { font-family: var(--font-display); font-size: 30px; line-height: 34px; font-weight: 800; letter-spacing: -0.025em; }
+    .ft-balance__stats { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .ft-balance__stat { min-width: 0; padding: 0 8px; border-left: 1px solid var(--line-on-deep); }
+    .ft-balance__stat:first-child { padding-left: 0; border-left: 0; }
+    .ft-balance__stat-label { display: flex; align-items: center; gap: 3px; color: var(--on-deep-muted); }
+    .ft-balance__stat-label .ft-icon { font-size: 12px; }
   </style>
 </head>
-<body class="bg-white font-sans text-slate-800 antialiased">
+<body class="bg-paper font-sans text-ink antialiased t-body">
 
   <!-- Nav -->
-  <header class="sticky top-0 z-30 border-b border-slate-100 bg-white/80 backdrop-blur">
+  <header class="site-header sticky top-0 z-30">
     <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-      <a href="#" class="flex items-center gap-2 text-lg font-bold text-slate-900">
+      <a href="#" class="flex items-center gap-2 font-display text-xl font-bold tracking-tight text-ink">
         <img src="assets/favicon.svg" alt="" class="h-8 w-8" /> FinTrack
       </a>
-      <div class="hidden items-center gap-8 text-sm font-medium text-slate-600 sm:flex">
-        <a href="#features" class="hover:text-brand-600">Features</a>
-        <a href="#download" class="hover:text-brand-600">Download</a>
-        <a href="#faq" class="hover:text-brand-600">FAQ</a>
+      <div class="t-label hidden items-center gap-8 text-ink-muted sm:flex">
+        <a href="#features" class="hover:text-fin">Features</a>
+        <a href="#download" class="hover:text-fin">Download</a>
+        <a href="#faq" class="hover:text-fin">FAQ</a>
       </div>
-      <a href="#download" class="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">Get the app</a>
+      <a href="#download" class="ft-btn ft-btn--primary ft-btn--sm">Get the app</a>
     </nav>
   </header>
 
   <!-- Hero -->
-  <section class="relative overflow-hidden bg-gradient-to-b from-brand-50 to-white">
-    <div class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
+  <section>
+    <div class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:py-16">
       <div>
-        <span class="inline-flex items-center gap-2 rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-700">
+        <span class="t-label inline-flex items-center rounded-full bg-fin-soft px-3 py-1 text-fin">
           Free · Android &amp; Windows
         </span>
-        <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-          Know where your money goes.<br /><span class="text-brand-600">Decide where it grows.</span>
+        <h1 class="t-display mt-5 text-ink">
+          Know where your money goes.<br /><span class="text-fin">Decide where it grows.</span>
         </h1>
-        <p class="mt-5 max-w-lg text-lg text-slate-600">
+        <p class="t-body mt-4 max-w-lg text-ink-muted">
           FinTrack keeps your income, expenses, budgets and savings goals in one place —
           synced securely between your phone and your PC.
         </p>
         <div id="hero-buttons" class="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a href="#download" data-dl="android" class="dl-link inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3.5 font-semibold text-white shadow-lg hover:bg-slate-800">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.84-3.18a.38.38 0 00-.66-.38l-1.86 3.22a11.5 11.5 0 00-9.84 0L5.22 5.92a.38.38 0 10-.66.38L6.4 9.48A10.8 10.8 0 001 18h22a10.8 10.8 0 00-5.4-8.52zM7 15.25a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5zm10 0a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5z"/></svg>
+          <a href="#download" data-dl="android" class="dl-link ft-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.84-3.18a.38.38 0 00-.66-.38l-1.86 3.22a11.5 11.5 0 00-9.84 0L5.22 5.92a.38.38 0 10-.66.38L6.4 9.48A10.8 10.8 0 001 18h22a10.8 10.8 0 00-5.4-8.52zM7 15.25a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5zm10 0a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5z"/></svg>
             Download for Android
           </a>
-          <a href="#download" data-dl="windows" class="dl-link inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3.5 font-semibold text-slate-900 hover:border-slate-400">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5l7.5-1v7H3v-6zm0 13l7.5 1v-7H3v6zm8.5 1.2L21 21v-8.5h-9.5v7.2zm0-15.4v7.2H21V3l-9.5 1.3z"/></svg>
+          <a href="#download" data-dl="windows" class="dl-link ft-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5l7.5-1v7H3v-6zm0 13l7.5 1v-7H3v6zm8.5 1.2L21 21v-8.5h-9.5v7.2zm0-15.4v7.2H21V3l-9.5 1.3z"/></svg>
             Download for Windows
           </a>
         </div>
-        <p class="mt-4 text-sm text-slate-500" id="hero-version">&nbsp;</p>
-        <p id="other-os" class="mt-2 hidden text-sm text-slate-500">FinTrack is available for Android phones and Windows PCs.</p>
+        <p class="t-caption ft-num mt-4 text-ink-muted" id="hero-version">&nbsp;</p>
+        <p id="other-os" class="t-caption mt-2 hidden text-ink-muted">FinTrack is available for Android phones and Windows PCs.</p>
       </div>
 
-      <!-- Phone mockup -->
-      <div class="relative mx-auto w-full max-w-xs">
-        <div class="absolute -inset-8 -z-10 rounded-full bg-brand-200/40 blur-3xl"></div>
-        <div class="rounded-[2.5rem] border-[10px] border-slate-900 bg-slate-50 p-4 shadow-2xl">
-          <div class="flex items-center justify-between text-xs text-slate-500"><span>9:41</span><span>●●●</span></div>
-          <p class="mt-4 text-xs font-medium text-slate-500">Total balance</p>
-          <p class="text-3xl font-extrabold text-slate-900">₱48,250.00</p>
-          <div class="mt-4 grid grid-cols-2 gap-2">
-            <div class="rounded-xl bg-white p-3 shadow-sm"><p class="text-[10px] text-slate-500">Income</p><p class="font-bold text-brand-600">+₱32,000</p></div>
-            <div class="rounded-xl bg-white p-3 shadow-sm"><p class="text-[10px] text-slate-500">Expenses</p><p class="font-bold text-rose-500">−₱18,420</p></div>
+      <!-- Phone mockup: the app's home screen -->
+      <div class="mx-auto w-full max-w-xs" role="img" aria-label="FinTrack's home screen: a total balance of ₱48,250.00, two budgets and recent transactions">
+        <div class="phone">
+          <div class="t-micro flex items-center justify-between px-1 text-ink-muted">
+            <span class="ft-num">9:41</span>
+            <span class="flex items-center gap-1">
+              <span class="ft-icon is-filled" style="font-size:14px" aria-hidden="true">signal_cellular_alt</span>
+              <span class="ft-icon is-filled" style="font-size:14px" aria-hidden="true">wifi</span>
+              <span class="ft-icon is-filled" style="font-size:14px" aria-hidden="true">battery_full</span>
+            </span>
           </div>
-          <div class="mt-4 rounded-xl bg-white p-3 shadow-sm">
-            <div class="flex justify-between text-[11px]"><span class="font-semibold">Food &amp; Dining</span><span class="text-slate-500">82%</span></div>
-            <div class="mt-1.5 h-2 rounded-full bg-slate-100"><div class="h-2 w-[82%] rounded-full bg-amber-400"></div></div>
-            <div class="mt-3 flex justify-between text-[11px]"><span class="font-semibold">Transport</span><span class="text-slate-500">45%</span></div>
-            <div class="mt-1.5 h-2 rounded-full bg-slate-100"><div class="h-2 w-[45%] rounded-full bg-brand-500"></div></div>
+
+          <div class="ft-balance mt-3">
+            <svg class="ft-balance__wave" viewBox="0 0 192 56" aria-hidden="true">
+              <path d="M12 22 q 24 -17 48 0 t 48 0 t 48 0 t 48 0" stroke-width="6" opacity="0.45" />
+              <path d="M36 42 q 24 -13 48 0 t 48 0 t 48 0" stroke-width="4" opacity="0.25" />
+            </svg>
+            <p class="t-caption text-on-deep-muted">Total balance</p>
+            <p class="ft-balance__total ft-num mt-0.5">₱48,250.00</p>
+            <p class="t-micro mb-2 mt-4 text-on-deep-muted">This month</p>
+            <div class="ft-balance__stats">
+              <div class="ft-balance__stat">
+                <span class="ft-balance__stat-label t-micro"><span class="ft-icon" aria-hidden="true">south_west</span>Income</span>
+                <span class="t-caption ft-num mt-0.5 block font-semibold text-foam">+₱32K</span>
+              </div>
+              <div class="ft-balance__stat">
+                <span class="ft-balance__stat-label t-micro"><span class="ft-icon" aria-hidden="true">north_east</span>Expenses</span>
+                <span class="t-caption ft-num mt-0.5 block font-semibold text-on-deep">&minus;₱18.4K</span>
+              </div>
+              <div class="ft-balance__stat">
+                <span class="ft-balance__stat-label t-micro"><span class="ft-icon" aria-hidden="true">balance</span>Net</span>
+                <span class="t-caption ft-num mt-0.5 block font-semibold text-foam">+₱13.6K</span>
+              </div>
+            </div>
           </div>
-          <div class="mt-4 space-y-2">
-            <div class="flex items-center justify-between rounded-xl bg-white p-3 text-xs shadow-sm"><span>🛒 Groceries</span><span class="font-semibold text-rose-500">−₱1,240</span></div>
-            <div class="flex items-center justify-between rounded-xl bg-white p-3 text-xs shadow-sm"><span>💼 Salary</span><span class="font-semibold text-brand-600">+₱32,000</span></div>
-            <div class="flex items-center justify-between rounded-xl bg-white p-3 text-xs shadow-sm"><span>⚡ Electricity</span><span class="font-semibold text-rose-500">−₱2,180</span></div>
+
+          <div class="mock-card mt-3 space-y-3 p-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="ft-badge ft-badge--sm" style="--c:#ea580c"><span class="ft-icon" aria-hidden="true">restaurant</span></span>
+                <span class="t-caption flex-1 font-semibold">Food &amp; Dining</span>
+                <span class="t-micro ft-num inline-flex items-center gap-0.5 text-warning"><span class="ft-icon is-filled" style="font-size:14px" aria-hidden="true">warning</span>82%</span>
+              </div>
+              <div class="ft-bar ft-bar--warning mt-2"><span style="width:82%"></span></div>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="ft-badge ft-badge--sm" style="--c:#0ea5e9"><span class="ft-icon" aria-hidden="true">directions_car</span></span>
+                <span class="t-caption flex-1 font-semibold">Transport</span>
+                <span class="t-micro ft-num">45%</span>
+              </div>
+              <div class="ft-bar mt-2"><span style="width:45%"></span></div>
+            </div>
+          </div>
+
+          <div class="mock-card mt-3">
+            <div class="mock-row">
+              <span class="ft-badge ft-badge--sm" style="--c:#65a30d"><span class="ft-icon" aria-hidden="true">shopping_cart</span></span>
+              <span class="min-w-0 flex-1"><span class="t-caption block font-semibold">Groceries</span><span class="t-micro block font-normal text-ink-muted">Today · BPI Savings</span></span>
+              <span class="t-caption ft-num font-semibold">&minus;₱1,240.00</span>
+            </div>
+            <div class="mock-row">
+              <span class="ft-badge ft-badge--sm" style="--c:#059669"><span class="ft-icon" aria-hidden="true">work</span></span>
+              <span class="min-w-0 flex-1"><span class="t-caption block font-semibold">Salary</span><span class="t-micro block font-normal text-ink-muted">Yesterday · BPI Savings</span></span>
+              <span class="t-caption ft-num font-semibold text-fin">+₱32,000.00</span>
+            </div>
+            <div class="mock-row">
+              <span class="ft-badge ft-badge--sm" style="--c:#f59e0b"><span class="ft-icon" aria-hidden="true">bolt</span></span>
+              <span class="min-w-0 flex-1"><span class="t-caption block font-semibold">Electricity</span><span class="t-micro block font-normal text-ink-muted">Mon · GCash</span></span>
+              <span class="t-caption ft-num font-semibold">&minus;₱2,180.00</span>
+            </div>
           </div>
         </div>
       </div>
@@ -107,104 +276,104 @@
   </section>
 
   <!-- Features -->
-  <section id="features" class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+  <section id="features" class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
     <div class="mx-auto max-w-2xl text-center">
-      <h2 class="text-3xl font-bold tracking-tight text-slate-900">Everything you need to stay on budget</h2>
-      <p class="mt-3 text-slate-600">Simple enough for every day, detailed enough to plan the year.</p>
+      <h2 class="t-headline text-ink">Everything you need to stay on budget</h2>
+      <p class="t-body mt-2 text-ink-muted">Simple enough for every day, detailed enough to plan the year.</p>
     </div>
-    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">💸</div><h3 class="mt-3 font-semibold text-slate-900">Income &amp; expense tracking</h3><p class="mt-2 text-sm text-slate-600">Log transactions in seconds with categories, notes and dates — across cash, bank, e-wallet and credit accounts.</p></div>
-      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">🎯</div><h3 class="mt-3 font-semibold text-slate-900">Budgets &amp; alerts</h3><p class="mt-2 text-sm text-slate-600">Set a monthly limit per category and get notified before you overspend.</p></div>
-      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">📊</div><h3 class="mt-3 font-semibold text-slate-900">Reports &amp; charts</h3><p class="mt-2 text-sm text-slate-600">See spending by category, monthly trends and income vs. expenses. Export to CSV anytime.</p></div>
-      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">🏦</div><h3 class="mt-3 font-semibold text-slate-900">Savings goals</h3><p class="mt-2 text-sm text-slate-600">Save for a laptop, a trip or an emergency fund and watch your progress grow.</p></div>
-      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">🔁</div><h3 class="mt-3 font-semibold text-slate-900">Recurring bills</h3><p class="mt-2 text-sm text-slate-600">Rent, subscriptions and salary are recorded automatically on schedule.</p></div>
-      <div class="rounded-2xl border border-slate-200 p-6"><div class="text-2xl">🔒</div><h3 class="mt-3 font-semibold text-slate-900">Private &amp; synced</h3><p class="mt-2 text-sm text-slate-600">Your data is protected per account and stays in sync between your phone and PC.</p></div>
+    <div class="mt-8 grid gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+      <div class="ft-card p-4 sm:p-6"><span class="ft-badge" style="--c:#059669"><span class="ft-icon" aria-hidden="true">receipt_long</span></span><h3 class="t-title mt-3 text-ink">Income &amp; expense tracking</h3><p class="t-body mt-1 text-ink-muted">Log transactions in seconds with categories, notes and dates — across cash, bank, e-wallet and credit accounts.</p></div>
+      <div class="ft-card p-4 sm:p-6"><span class="ft-badge" style="--c:#ea580c"><span class="ft-icon" aria-hidden="true">pie_chart</span></span><h3 class="t-title mt-3 text-ink">Budgets &amp; alerts</h3><p class="t-body mt-1 text-ink-muted">Set a monthly limit per category and get notified before you overspend.</p></div>
+      <div class="ft-card p-4 sm:p-6"><span class="ft-badge" style="--c:#4f46e5"><span class="ft-icon" aria-hidden="true">insights</span></span><h3 class="t-title mt-3 text-ink">Reports &amp; charts</h3><p class="t-body mt-1 text-ink-muted">See spending by category, monthly trends and income vs. expenses. Export to CSV anytime.</p></div>
+      <div class="ft-card p-4 sm:p-6"><span class="ft-badge" style="--c:#0d9488"><span class="ft-icon" aria-hidden="true">savings</span></span><h3 class="t-title mt-3 text-ink">Savings goals</h3><p class="t-body mt-1 text-ink-muted">Save for a laptop, a trip or an emergency fund and watch your progress grow.</p></div>
+      <div class="ft-card p-4 sm:p-6"><span class="ft-badge" style="--c:#7c3aed"><span class="ft-icon" aria-hidden="true">repeat</span></span><h3 class="t-title mt-3 text-ink">Recurring bills</h3><p class="t-body mt-1 text-ink-muted">Rent, subscriptions and salary are recorded automatically on schedule.</p></div>
+      <div class="ft-card p-4 sm:p-6"><span class="ft-badge" style="--c:#475569"><span class="ft-icon" aria-hidden="true">lock</span></span><h3 class="t-title mt-3 text-ink">Private &amp; synced</h3><p class="t-body mt-1 text-ink-muted">Your data is protected per account and stays in sync between your phone and PC.</p></div>
     </div>
   </section>
 
   <!-- Download -->
-  <section id="download" class="bg-slate-50 py-20">
+  <section id="download" class="border-t border-line py-12">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <div class="mx-auto max-w-2xl text-center">
-        <h2 class="text-3xl font-bold tracking-tight text-slate-900">Download FinTrack</h2>
-        <p class="mt-3 text-slate-600">Sign in with the same account on both devices to keep everything in sync.</p>
+        <h2 class="t-headline text-ink">Download FinTrack</h2>
+        <p class="t-body mt-2 text-ink-muted">Sign in with the same account on both devices to keep everything in sync.</p>
       </div>
 
-      <div class="mt-12 grid gap-6 md:grid-cols-2">
+      <div class="mt-8 grid gap-2 sm:gap-4 md:grid-cols-2">
         <!-- Android card -->
-        <article class="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" data-platform="android">
+        <article class="ft-card flex flex-col p-4 sm:p-6" data-platform="android">
           <div class="flex items-center gap-3">
-            <div class="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-600">
+            <span class="ft-badge ft-badge--lg" style="--c:#059669">
               <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.84-3.18a.38.38 0 00-.66-.38l-1.86 3.22a11.5 11.5 0 00-9.84 0L5.22 5.92a.38.38 0 10-.66.38L6.4 9.48A10.8 10.8 0 001 18h22a10.8 10.8 0 00-5.4-8.52zM7 15.25a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5zm10 0a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5z"/></svg>
-            </div>
+            </span>
             <div>
-              <h3 class="flex items-center gap-2 text-lg font-semibold text-slate-900">Android<span class="recommended hidden rounded-full bg-brand-100 px-2 py-0.5 text-xs font-semibold text-brand-700">For this device</span></h3>
-              <p class="text-sm text-slate-500">Android 7.0 or newer · APK</p>
+              <h3 class="t-title flex flex-wrap items-center gap-2 text-ink">Android<span class="recommended t-micro hidden rounded-full bg-fin-soft px-2 py-0.5 text-fin">For this device</span></h3>
+              <p class="t-caption text-ink-muted">Android 7.0 or newer · APK</p>
             </div>
           </div>
-          <p class="meta mt-4 text-sm text-slate-500">Loading latest version…</p>
-          <div class="notes mt-3 hidden whitespace-pre-line rounded-lg bg-slate-50 p-3 text-sm text-slate-600"></div>
-          <a class="download mt-6 inline-flex items-center justify-center rounded-xl bg-brand-600 px-5 py-3 font-semibold text-white opacity-50 pointer-events-none hover:bg-brand-700" href="#">Download APK</a>
-          <details class="mt-5 text-sm text-slate-600">
-            <summary class="font-medium text-slate-800">How to install</summary>
+          <p class="meta t-caption ft-num mt-4 text-ink-muted">Loading latest version…</p>
+          <div class="notes t-caption mt-3 hidden whitespace-pre-line rounded-[14px] bg-sunken p-3 text-ink-muted"></div>
+          <a class="download ft-btn mt-6 opacity-50 pointer-events-none" href="#">Download APK</a>
+          <details class="t-body mt-5 text-ink-muted">
+            <summary class="t-label inline-flex items-center gap-1 text-ink">How to install<span class="ft-icon chev transition" aria-hidden="true">expand_more</span></summary>
             <ol class="mt-2 list-decimal space-y-1 pl-5">
-              <li>Tap <b>Download APK</b> and open the file when it finishes.</li>
-              <li>If asked, allow your browser to <b>install unknown apps</b> (Settings → Apps → Special access).</li>
-              <li>Tap <b>Install</b>, then open FinTrack and sign in.</li>
+              <li>Tap <b class="font-semibold text-ink">Download APK</b> and open the file when it finishes.</li>
+              <li>If asked, allow your browser to <b class="font-semibold text-ink">install unknown apps</b> (Settings → Apps → Special access).</li>
+              <li>Tap <b class="font-semibold text-ink">Install</b>, then open FinTrack and sign in.</li>
             </ol>
           </details>
         </article>
 
         <!-- Windows card -->
-        <article class="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" data-platform="windows">
+        <article class="ft-card flex flex-col p-4 sm:p-6" data-platform="windows">
           <div class="flex items-center gap-3">
-            <div class="grid h-12 w-12 place-items-center rounded-xl bg-sky-50 text-sky-600">
+            <span class="ft-badge ft-badge--lg" style="--c:#0ea5e9">
               <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5l7.5-1v7H3v-6zm0 13l7.5 1v-7H3v6zm8.5 1.2L21 21v-8.5h-9.5v7.2zm0-15.4v7.2H21V3l-9.5 1.3z"/></svg>
-            </div>
+            </span>
             <div>
-              <h3 class="flex items-center gap-2 text-lg font-semibold text-slate-900">Windows<span class="recommended hidden rounded-full bg-brand-100 px-2 py-0.5 text-xs font-semibold text-brand-700">For this device</span></h3>
-              <p class="text-sm text-slate-500">Windows 10 or 11 (64-bit) · Installer</p>
+              <h3 class="t-title flex flex-wrap items-center gap-2 text-ink">Windows<span class="recommended t-micro hidden rounded-full bg-fin-soft px-2 py-0.5 text-fin">For this device</span></h3>
+              <p class="t-caption text-ink-muted">Windows 10 or 11 (64-bit) · Installer</p>
             </div>
           </div>
-          <p class="meta mt-4 text-sm text-slate-500">Loading latest version…</p>
-          <div class="notes mt-3 hidden whitespace-pre-line rounded-lg bg-slate-50 p-3 text-sm text-slate-600"></div>
-          <a class="download mt-6 inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white opacity-50 pointer-events-none hover:bg-slate-800" href="#">Download installer</a>
-          <details class="mt-5 text-sm text-slate-600">
-            <summary class="font-medium text-slate-800">How to install</summary>
+          <p class="meta t-caption ft-num mt-4 text-ink-muted">Loading latest version…</p>
+          <div class="notes t-caption mt-3 hidden whitespace-pre-line rounded-[14px] bg-sunken p-3 text-ink-muted"></div>
+          <a class="download ft-btn mt-6 opacity-50 pointer-events-none" href="#">Download installer</a>
+          <details class="t-body mt-5 text-ink-muted">
+            <summary class="t-label inline-flex items-center gap-1 text-ink">How to install<span class="ft-icon chev transition" aria-hidden="true">expand_more</span></summary>
             <ol class="mt-2 list-decimal space-y-1 pl-5">
-              <li>Run the downloaded <b>FinTrack</b> setup file.</li>
-              <li>If Windows SmartScreen appears, click <b>More info → Run anyway</b>.</li>
+              <li>Run the downloaded <b class="font-semibold text-ink">FinTrack</b> setup file.</li>
+              <li>If Windows SmartScreen appears, click <b class="font-semibold text-ink">More info → Run anyway</b>.</li>
               <li>Follow the setup steps, then launch FinTrack from the Start menu.</li>
             </ol>
           </details>
         </article>
       </div>
-      <p id="dl-error" class="mt-6 hidden text-center text-sm text-rose-600">Couldn't load the latest release. Please refresh the page or try again later.</p>
+      <p id="dl-error" class="t-body mt-6 hidden text-center text-expense"><span class="ft-icon is-filled align-[-4px]" aria-hidden="true">error</span> Couldn't load the latest release. Please refresh the page or try again later.</p>
 
-      <div id="history" class="mx-auto mt-14 hidden max-w-3xl">
-        <h3 class="text-center text-xl font-bold text-slate-900">What's new</h3>
-        <ol id="history-list" class="mt-6 space-y-3"></ol>
+      <div id="history" class="mx-auto mt-12 hidden max-w-3xl">
+        <h3 class="t-title text-center text-ink">What's new</h3>
+        <ol id="history-list" class="mt-4 space-y-2"></ol>
       </div>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section id="faq" class="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-    <h2 class="text-center text-3xl font-bold tracking-tight text-slate-900">Frequently asked questions</h2>
-    <div class="mt-10 divide-y divide-slate-200 border-y border-slate-200">
-      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Is FinTrack free?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">Yes. FinTrack is free to download and use.</p></details>
-      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Why isn't it on the Play Store?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">We distribute the app directly from this site. Android will ask you to allow installs from your browser the first time — that's expected. The app checks for updates automatically.</p></details>
-      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Why does Windows show a SmartScreen warning?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">New installers without a paid code-signing certificate trigger SmartScreen. Click <b>More info → Run anyway</b> to continue.</p></details>
-      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Is my financial data safe?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">Your data is stored in a secure cloud database with row-level security, so only your signed-in account can read or change it. We never sell your data. See the <a href="privacy.html" class="text-brand-600 underline">privacy policy</a>.</p></details>
-      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Can I use it on my phone and PC at the same time?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">Yes. Sign in with the same email on both and your transactions, budgets and goals stay in sync.</p></details>
-      <details class="py-5"><summary class="flex items-center justify-between font-medium text-slate-900">Can I export my data?<span class="chev transition">⌄</span></summary><p class="mt-3 text-slate-600">Yes — the Reports screen exports your transactions to a CSV file you can open in Excel or Google Sheets.</p></details>
+  <section id="faq" class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <h2 class="t-headline text-center text-ink">Frequently asked questions</h2>
+    <div class="mt-8 divide-y divide-line border-y border-line">
+      <details class="py-5"><summary class="t-body-strong flex items-center justify-between gap-4 text-ink">Is FinTrack free?<span class="ft-icon chev text-ink-muted transition" aria-hidden="true">expand_more</span></summary><p class="t-body mt-3 text-ink-muted">Yes. FinTrack is free to download and use.</p></details>
+      <details class="py-5"><summary class="t-body-strong flex items-center justify-between gap-4 text-ink">Why isn't it on the Play Store?<span class="ft-icon chev text-ink-muted transition" aria-hidden="true">expand_more</span></summary><p class="t-body mt-3 text-ink-muted">We distribute the app directly from this site. Android will ask you to allow installs from your browser the first time — that's expected. The app checks for updates automatically.</p></details>
+      <details class="py-5"><summary class="t-body-strong flex items-center justify-between gap-4 text-ink">Why does Windows show a SmartScreen warning?<span class="ft-icon chev text-ink-muted transition" aria-hidden="true">expand_more</span></summary><p class="t-body mt-3 text-ink-muted">New installers without a paid code-signing certificate trigger SmartScreen. Click <b class="font-semibold text-ink">More info → Run anyway</b> to continue.</p></details>
+      <details class="py-5"><summary class="t-body-strong flex items-center justify-between gap-4 text-ink">Is my financial data safe?<span class="ft-icon chev text-ink-muted transition" aria-hidden="true">expand_more</span></summary><p class="t-body mt-3 text-ink-muted">Your data is stored in a secure cloud database with row-level security, so only your signed-in account can read or change it. We never sell your data. See the <a href="privacy.html" class="text-fin underline">privacy policy</a>.</p></details>
+      <details class="py-5"><summary class="t-body-strong flex items-center justify-between gap-4 text-ink">Can I use it on my phone and PC at the same time?<span class="ft-icon chev text-ink-muted transition" aria-hidden="true">expand_more</span></summary><p class="t-body mt-3 text-ink-muted">Yes. Sign in with the same email on both and your transactions, budgets and goals stay in sync.</p></details>
+      <details class="py-5"><summary class="t-body-strong flex items-center justify-between gap-4 text-ink">Can I export my data?<span class="ft-icon chev text-ink-muted transition" aria-hidden="true">expand_more</span></summary><p class="t-body mt-3 text-ink-muted">Yes — the Reports screen exports your transactions to a CSV file you can open in Excel or Google Sheets.</p></details>
     </div>
   </section>
 
-  <footer class="border-t border-slate-100">
-    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-slate-500 sm:flex-row sm:px-6">
+  <footer class="border-t border-line">
+    <div class="t-caption mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-ink-muted sm:flex-row sm:px-6">
       <p>© <span id="year"></span> FinTrack</p>
-      <div class="flex gap-6"><a href="privacy.html" class="hover:text-slate-800">Privacy policy</a><a href="#download" class="hover:text-slate-800">Download</a></div>
+      <div class="flex gap-6"><a href="privacy.html" class="hover:text-ink">Privacy policy</a><a href="#download" class="hover:text-ink">Download</a></div>
     </div>
   </footer>
 

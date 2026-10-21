@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,7 +26,7 @@ Future<void> showUpdateDialog(BuildContext context, AppVersion update) {
   return showDialog<void>(
     context: context,
     builder: (context) => AlertDialog(
-      icon: const Icon(Icons.system_update_outlined),
+      icon: const Icon(Symbols.system_update_rounded),
       title: Text('Update available: ${update.version}'),
       content: SingleChildScrollView(
         child: Text(
