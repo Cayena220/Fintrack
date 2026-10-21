@@ -1,8 +1,45 @@
-# FinTrack
+<p align="center">
+  <img src="website/assets/icon-512.png" width="120" alt="FinTrack icon: a white shark fin above a wave on a green tile">
+</p>
 
-Personal finance and expense tracker for **Android** and **Windows**, built with Flutter and Supabase.
+<h1 align="center">FinTrack</h1>
 
-It covers accounts, income/expense/transfer tracking, monthly budgets with alerts, reports with CSV export, savings goals and recurring bills. People download it from a landing page hosted on Vercel.
+<p align="center">
+  <b>Know where your money goes. Decide where it grows.</b><br>
+  A free personal finance and expense tracker for Android and Windows, synced between your phone and your PC.
+</p>
+
+<p align="center">
+  <a href="https://fintrack-cayena220.vercel.app"><img alt="Website" src="https://img.shields.io/badge/website-fintrack--cayena220.vercel.app-059669?style=flat-square"></a>
+  <img alt="Android and Windows" src="https://img.shields.io/badge/platforms-Android%20%7C%20Windows-0F172A?style=flat-square">
+  <img alt="Flutter app" src="https://img.shields.io/badge/app-Flutter-02569B?style=flat-square&logo=flutter&logoColor=white">
+  <img alt="Supabase backend" src="https://img.shields.io/badge/backend-Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white">
+  <img alt="Version 1.0.2" src="https://img.shields.io/badge/version-1.0.2-10B981?style=flat-square">
+</p>
+
+<p align="center">
+  <a href="https://fintrack-cayena220.vercel.app/#download"><b>Download</b></a> ·
+  <a href="#features">Features</a> ·
+  <a href="#how-it-fits-together">How it fits together</a> ·
+  <a href="#1-supabase">Set it up</a> ·
+  <a href="#3-releasing">Releasing</a>
+</p>
+
+<p align="center">
+  <img src=".github/assets/landing.png" width="900" alt="FinTrack's landing page: the tagline, Windows and Android download buttons, and a phone showing a ₱48,250 balance with budgets and recent transactions">
+</p>
+
+## Features
+
+- **Income and expense tracking**: log transactions and transfers with categories, notes and dates across cash, bank, e-wallet and credit accounts.
+- **Budgets and alerts**: set a monthly limit per category and get a notification before you overspend.
+- **Reports and charts**: spending by category, monthly trends and income vs. expenses, with CSV export.
+- **Savings goals**: save for a laptop, a trip or an emergency fund and watch the progress bar fill.
+- **Recurring bills**: rent, subscriptions and salary are recorded automatically on schedule.
+- **Offline mode**: add transactions without a connection; they sync when you're back online.
+- **Private and synced**: row-level security keeps each account's data to itself, and it stays in sync between phone and PC.
+
+## Project layout
 
 ```
 app/         Flutter app (one codebase for Android + Windows)
