@@ -14,7 +14,7 @@
   <img alt="Android and Windows" src="https://img.shields.io/badge/platforms-Android%20%7C%20Windows-0F172A?style=flat-square">
   <img alt="Flutter app" src="https://img.shields.io/badge/app-Flutter-02569B?style=flat-square&logo=flutter&logoColor=white">
   <img alt="Supabase backend" src="https://img.shields.io/badge/backend-Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white">
-  <img alt="Version 1.0.2" src="https://img.shields.io/badge/version-1.0.2-10B981?style=flat-square">
+  <img alt="Version 1.0.3" src="https://img.shields.io/badge/version-1.0.3-10B981?style=flat-square">
 </p>
 
 <p align="center">
