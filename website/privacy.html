@@ -3,62 +3,162 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Privacy Policy — FinTrack</title>
+  <title>Privacy policy — FinTrack</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <meta name="theme-color" content="#f5f6f1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-  <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } } };</script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Instrument Sans"', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'],
+            display: ['"Bricolage Grotesque"', '"Instrument Sans"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            paper: 'var(--paper)',
+            surface: 'var(--surface)',
+            sunken: 'var(--surface-sunken)',
+            line: 'var(--line)',
+            'line-strong': 'var(--line-strong)',
+            ink: 'var(--ink)',
+            'ink-muted': 'var(--ink-muted)',
+            deep: 'var(--deep)',
+            'on-deep': 'var(--on-deep)',
+            'on-deep-muted': 'var(--on-deep-muted)',
+            foam: 'var(--foam)',
+            fin: 'var(--fin)',
+            'fin-soft': 'var(--fin-soft)',
+            expense: 'var(--expense)',
+            warning: 'var(--warning)',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* FinTrack design tokens: Shallows (light). */
+    :root {
+      --paper: #f5f6f1;
+      --surface: #ffffff;
+      --surface-sunken: #eceee7;
+      --line: #dce0d6;
+      --line-strong: #7d8983;
+      --ink: #0d2420;
+      --ink-muted: #4a5b55;
+      --deep: #0c3b31;
+      --on-deep: #f1faf5;
+      --on-deep-muted: #a9d9c4;
+      --foam: #a7f3d0;
+      --line-on-deep: rgba(241, 250, 245, 0.18);
+      --fin: #087a58;
+      --fin-hover: #066548;
+      --on-fin: #ffffff;
+      --fin-soft: #dbf3e7;
+      --expense: #b3361f;
+      --warning: #8a5000;
+      --sun: #b8740c;
+      --shadow-float: 0 6px 20px rgba(13, 36, 32, 0.16), 0 1px 3px rgba(13, 36, 32, 0.12);
+      --shadow-lift: 0 1px 2px rgba(13, 36, 32, 0.08);
+      --font-display: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
+      --font-sans: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    :focus-visible { outline: 2px solid var(--fin); outline-offset: 2px; border-radius: 4px; }
+
+    /* Type styles */
+    .t-balance { font-family: var(--font-display); font-size: 44px; line-height: 48px; font-weight: 800; letter-spacing: -0.025em; }
+    .t-display { font-family: var(--font-display); font-size: 36px; line-height: 40px; font-weight: 800; letter-spacing: -0.025em; }
+    .t-headline { font-family: var(--font-display); font-size: 24px; line-height: 30px; font-weight: 700; letter-spacing: -0.015em; }
+    .t-title { font-size: 17px; line-height: 24px; font-weight: 600; }
+    .t-body { font-size: 15px; line-height: 22px; font-weight: 400; }
+    .t-body-strong { font-size: 15px; line-height: 22px; font-weight: 600; }
+    .t-label { font-size: 14px; line-height: 20px; font-weight: 600; letter-spacing: 0.005em; }
+    .t-caption { font-size: 13px; line-height: 18px; font-weight: 400; }
+    .t-micro { font-size: 11px; line-height: 14px; font-weight: 600; letter-spacing: 0.02em; }
+    .ft-num { font-variant-numeric: tabular-nums; }
+
+    .site-header { background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+
+    /* Card: flat surface with a hairline */
+    .ft-card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; }
+
+    /* Buttons */
+    .ft-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 1px solid transparent; border-radius: 14px; font-size: 14px; line-height: 20px; font-weight: 600; letter-spacing: 0.005em; text-decoration: none; transition: background-color .12s, color .12s; }
+    .ft-btn--sm { min-height: 36px; padding: 0 12px; border-radius: 10px; }
+    .ft-btn--primary { background: var(--fin); color: var(--on-fin); }
+    .ft-btn--primary:hover { background: var(--fin-hover); }
+  </style>
 </head>
-<body class="bg-white font-sans text-slate-700 antialiased">
-  <header class="border-b border-slate-100">
-    <nav class="mx-auto flex max-w-3xl items-center justify-between px-4 py-4 sm:px-6">
-      <a href="index.html" class="flex items-center gap-2 font-bold text-slate-900"><img src="assets/favicon.svg" alt="" class="h-7 w-7" /> FinTrack</a>
-      <a href="index.html#download" class="text-sm font-medium text-emerald-700 hover:underline">Download</a>
+<body class="bg-paper font-sans text-ink antialiased t-body">
+
+  <!-- Nav -->
+  <header class="site-header sticky top-0 z-30">
+    <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+      <a href="index.html" class="flex items-center gap-2 font-display text-xl font-bold tracking-tight text-ink">
+        <img src="assets/favicon.svg" alt="" class="h-8 w-8" /> FinTrack
+      </a>
+      <div class="t-label hidden items-center gap-8 text-ink-muted sm:flex">
+        <a href="index.html#features" class="hover:text-fin">Features</a>
+        <a href="index.html#download" class="hover:text-fin">Download</a>
+        <a href="index.html#faq" class="hover:text-fin">FAQ</a>
+      </div>
+      <a href="index.html#download" class="ft-btn ft-btn--primary ft-btn--sm">Get the app</a>
     </nav>
   </header>
 
-  <main class="mx-auto max-w-3xl px-4 py-12 sm:px-6 [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-slate-900 [&_p]:mt-3 [&_li]:mt-1.5 [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:pl-6">
-    <h1 class="text-3xl font-bold text-slate-900">Privacy Policy</h1>
-    <p class="text-sm text-slate-500">Last updated: <!-- UPDATE BEFORE PUBLISHING -->October 13, 2026</p>
+  <main class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <h1 class="t-headline text-ink">Privacy policy</h1>
+    <p class="t-caption mt-2 text-ink-muted">Last updated: <!-- UPDATE BEFORE PUBLISHING -->October 13, 2026</p>
 
-    <p>This policy explains what information the FinTrack app (“FinTrack”, “we”) collects, how it is used and the choices you have. <!-- Replace with your legal name / contact details. --></p>
+    <div class="ft-card mt-8 p-5 sm:p-8">
+      <p class="t-body text-ink-muted">This policy explains what information the FinTrack app (“FinTrack”, “we”) collects, how it is used and the choices you have. <!-- Replace with your legal name / contact details. --></p>
 
-    <h2>Information we collect</h2>
-    <ul>
-      <li><b>Account information</b> — your email address and the display name you choose.</li>
-      <li><b>Financial records you enter</b> — accounts, transactions, categories, budgets, savings goals and recurring rules. FinTrack does not connect to your bank and never asks for bank or card credentials.</li>
-      <li><b>Technical information</b> — the app version and platform, used to tell you about updates.</li>
-    </ul>
+      <h2 class="t-title mt-8 text-ink">Information we collect</h2>
+      <ul class="t-body mt-3 list-disc space-y-1.5 pl-6 text-ink-muted">
+        <li><b class="font-semibold text-ink">Account information</b> — your email address and the display name you choose.</li>
+        <li><b class="font-semibold text-ink">Financial records you enter</b> — accounts, transactions, categories, budgets, savings goals and recurring rules. FinTrack does not connect to your bank and never asks for bank or card credentials.</li>
+        <li><b class="font-semibold text-ink">Technical information</b> — the app version and platform, used to tell you about updates.</li>
+      </ul>
 
-    <h2>How we use it</h2>
-    <ul>
-      <li>To sign you in and sync your data between your devices.</li>
-      <li>To calculate balances, budgets, reports and reminders shown in the app.</li>
-      <li>To send account emails such as confirmation and password reset.</li>
-    </ul>
-    <p>We do not sell your data, show ads, or share your financial records with third parties for marketing.</p>
+      <h2 class="t-title mt-8 text-ink">How we use it</h2>
+      <ul class="t-body mt-3 list-disc space-y-1.5 pl-6 text-ink-muted">
+        <li>To sign you in and sync your data between your devices.</li>
+        <li>To calculate balances, budgets, reports and reminders shown in the app.</li>
+        <li>To send account emails such as confirmation and password reset.</li>
+      </ul>
+      <p class="t-body mt-3 text-ink-muted">We do not sell your data, show ads, or share your financial records with third parties for marketing.</p>
 
-    <h2>Where your data is stored</h2>
-    <p>Data is stored with our infrastructure provider, Supabase, in an encrypted database. Row-level security rules ensure each record can be read or changed only by the account that created it.</p>
-    <p>So the app works without an internet connection, it also keeps a copy of your records on your device, along with any changes not yet uploaded. The copy is removed when you sign out. Changes not yet uploaded stay on the device until you sign in again and they sync.</p>
+      <h2 class="t-title mt-8 text-ink">Where your data is stored</h2>
+      <p class="t-body mt-3 text-ink-muted">Data is stored with our infrastructure provider, Supabase, in an encrypted database. Row-level security rules ensure each record can be read or changed only by the account that created it.</p>
+      <p class="t-body mt-3 text-ink-muted">So the app works without an internet connection, it also keeps a copy of your records on your device, along with any changes not yet uploaded. The copy is removed when you sign out. Changes not yet uploaded stay on the device until you sign in again and they sync.</p>
 
-    <h2>Your choices</h2>
-    <ul>
-      <li>You can edit or delete any record in the app at any time.</li>
-      <li>You can export your transactions as CSV from the Reports screen.</li>
-      <li>You can request deletion of your account and all associated data by contacting us. Deleting your account removes all of your records permanently.</li>
-    </ul>
+      <h2 class="t-title mt-8 text-ink">Your choices</h2>
+      <ul class="t-body mt-3 list-disc space-y-1.5 pl-6 text-ink-muted">
+        <li>You can edit or delete any record in the app at any time.</li>
+        <li>You can export your transactions as CSV from the Reports screen.</li>
+        <li>You can request deletion of your account and all associated data by contacting us. Deleting your account removes all of your records permanently.</li>
+      </ul>
 
-    <h2>Children</h2>
-    <p>FinTrack is not directed at children under 13 and we do not knowingly collect their information.</p>
+      <h2 class="t-title mt-8 text-ink">Children</h2>
+      <p class="t-body mt-3 text-ink-muted">FinTrack is not directed at children under 13 and we do not knowingly collect their information.</p>
 
-    <h2>Changes</h2>
-    <p>We will update this page if the policy changes and revise the date above.</p>
+      <h2 class="t-title mt-8 text-ink">Changes</h2>
+      <p class="t-body mt-3 text-ink-muted">We will update this page if the policy changes and revise the date above.</p>
 
-    <h2>Contact</h2>
-    <p>Questions or deletion requests: <a class="text-emerald-700 underline" href="mailto:support@example.com">support@example.com</a> <!-- Replace with your support email. --></p>
+      <h2 class="t-title mt-8 text-ink">Contact</h2>
+      <p class="t-body mt-3 text-ink-muted">Questions or deletion requests: <a class="text-fin underline" href="mailto:support@example.com">support@example.com</a> <!-- Replace with your support email. --></p>
+    </div>
   </main>
 
-  <footer class="border-t border-slate-100 py-8 text-center text-sm text-slate-500">© <script>document.write(new Date().getFullYear())</script> FinTrack</footer>
+  <footer class="border-t border-line">
+    <div class="t-caption mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-ink-muted sm:flex-row sm:px-6">
+      <p>© <script>document.write(new Date().getFullYear())</script> FinTrack</p>
+      <div class="flex gap-6"><a href="privacy.html" class="hover:text-ink">Privacy policy</a><a href="index.html#download" class="hover:text-ink">Download</a></div>
+    </div>
+  </footer>
 </body>
 </html>
